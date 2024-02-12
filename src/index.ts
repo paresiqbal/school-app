@@ -16,7 +16,7 @@ app.use(cors());
 
 // connect to mongodb
 mongoose.connect(
-  `mongodb+srv://pares:${key}@school-app.qc59lma.mongodb.net/school-app?retryWrites=true&w=majority`
+  `mongodb+srv://pares:${key}@school-app.qc59lma.mongodb.net/school-app`
 );
 
 // run server
