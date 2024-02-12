@@ -4,6 +4,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 
+// routes
+
 // config
 dotenv.config();
 
