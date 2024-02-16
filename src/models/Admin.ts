@@ -1,7 +1,7 @@
 // library
 import { Schema, model } from "mongoose";
 
-interface IAdmin {
+export interface IAdmin {
   _id?: string;
   username: string;
   password: string;

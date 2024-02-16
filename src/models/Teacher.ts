@@ -1,7 +1,7 @@
 // library
 import { Schema, model } from "mongoose";
 
-interface ITeacher {
+export interface ITeacher {
   _id?: string;
   username: string;
   password: string;

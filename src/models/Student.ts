@@ -1,7 +1,7 @@
 // library
 import { Schema, model } from "mongoose";
 
-interface IStudent {
+export interface IStudent {
   _id?: string;
   username: string;
   password: string;

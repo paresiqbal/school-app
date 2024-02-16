@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
 // models
-import { StudentModel } from "../models/Student";
+import { IStudent, StudentModel } from "../models/Student";
 import { TeacherModel } from "../models/Teacher";
 
 // error handling
@@ -39,6 +39,7 @@ router.post("/register", async (req: Request, res: Response) => {
         username,
         password: hashedPassword,
       });
+
       await newTeacher.save();
     } else {
       // handle invalid role
@@ -51,6 +52,12 @@ router.post("/register", async (req: Request, res: Response) => {
 });
 
 // login account
-// router.post("/login", (req: Request, res: Response) => {});
+router.post("/login", async (req: Request, res: Response) => {
+  const { username, password, role } = req.body;
+
+  try {
+    const student: IStudent = await StudentModel.findOne({ username });
+  } catch (error) {}
+});
 
 export { router as UserRouter };
