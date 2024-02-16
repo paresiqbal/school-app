@@ -1,14 +1,13 @@
 // libary
 import { Router, Request, Response } from "express";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const router = Router();
 
 // register account
 router.post("/register", (req: Request, res: Response) => {
   const { username, password, role } = req.body;
-
-  try {
-  } catch (error) {}
 });
 
 // login account
