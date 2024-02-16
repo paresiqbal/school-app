@@ -14,4 +14,4 @@ const TeacherSchema = new Schema<ITeacher>({
   role: { type: String, required: true },
 });
 
-export default model<ITeacher>("Teacher", TeacherSchema);
+export const TeacherModel = model<ITeacher>("Teacher", TeacherSchema);

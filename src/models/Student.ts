@@ -18,4 +18,4 @@ const StudentSchema = new Schema<IStudent>({
   //   bio: { type: Object, required: true },
 });
 
-export default model<IStudent>("Student", StudentSchema);
+export const StudentModel = model<IStudent>("Student", StudentSchema);
