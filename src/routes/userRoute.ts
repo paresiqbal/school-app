@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 // models
 import { IStudent, StudentModel } from "../models/Student";
-import { TeacherModel } from "../models/Teacher";
+import { ITeacher, TeacherModel } from "../models/Teacher";
 
 // error handling
 import { UserErrors } from "../enumError";
@@ -56,7 +56,12 @@ router.post("/login", async (req: Request, res: Response) => {
   const { username, password, role } = req.body;
 
   try {
+    // search user in collection
     const student: IStudent = await StudentModel.findOne({ username });
+    const teacher: ITeacher = await TeacherModel.findOne({ username });
+    if (!student && !teacher) {
+      return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
+    }
   } catch (error) {}
 });
 
