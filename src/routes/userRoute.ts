@@ -26,8 +26,28 @@ router.post("/register", async (req: Request, res: Response) => {
 
     // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new UserModel({ username, password: hashedPassword });
-  } catch (error) {}
+
+    // create account
+    if (role === "student") {
+      const newStudent = new StudentModel({
+        username,
+        password: hashedPassword,
+      });
+      await newStudent.save();
+    } else if (role === "teacher") {
+      const newTeacher = new TeacherModel({
+        username,
+        password: hashedPassword,
+      });
+      await newTeacher.save();
+    } else {
+      // handle invalid role
+      return res.status(400).json({ type: UserErrors.INVALID_ROLE });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Server error while creating account." });
+  }
 });
 
 // login account
