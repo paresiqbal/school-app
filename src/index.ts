@@ -5,8 +5,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 
 // routes
-import { TeacherRouter } from "./routes/teacherRoute";
-import { StudentRouter } from "./routes/StudentRoute";
+import { UserRouter } from "./routes/userRoute";
 
 // config
 dotenv.config();
@@ -19,8 +18,7 @@ app.use(express.json());
 app.use(cors());
 
 // routes
-app.use("/teacher", TeacherRouter);
-app.use("/student", StudentRouter);
+app.use("/user", UserRouter);
 
 // connect to mongodb
 mongoose.connect(
