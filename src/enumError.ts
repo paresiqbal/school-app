@@ -5,6 +5,7 @@ export enum UserErrors {
   USERNAME_ALREADY_EXISTS = "Username already exist",
   SERVER_ERROR = "Server error",
   INVALID_ROLE = "Invalid role specified",
+  INVALID_CREDENTIALS = "Invalid credentials",
 }
 
 export enum ProductErrors {
