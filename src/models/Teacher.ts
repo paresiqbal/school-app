@@ -5,11 +5,13 @@ interface ITeacher {
   _id?: string;
   username: string;
   password: string;
+  role: string;
 }
 
-const StudentSchema = new Schema<ITeacher>({
+const TeacherSchema = new Schema<ITeacher>({
   username: { type: String, required: true },
   password: { type: String, required: true },
+  role: { type: String, required: true },
 });
 
-export default model<ITeacher>("Student", StudentSchema);
+export default model<ITeacher>("Teacher", TeacherSchema);
