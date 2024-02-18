@@ -62,6 +62,7 @@ router.post("/login", async (req: Request, res: Response) => {
     let user: IStudent | ITeacher | IAdmin | null = null;
     let role = "";
 
+    // check if user exists and match the role
     const student = await StudentModel.findOne({ username });
     if (student) {
       user = student;
@@ -72,10 +73,10 @@ router.post("/login", async (req: Request, res: Response) => {
         user = teacher;
         role = "teacher";
       } else {
-        const admin = await AdminModel.findOne({ username }); // Attempt to find admin
+        const admin = await AdminModel.findOne({ username });
         if (admin) {
           user = admin;
-          role = "admin"; // Set role to admin
+          role = "admin";
         }
       }
     }
@@ -84,6 +85,7 @@ router.post("/login", async (req: Request, res: Response) => {
       return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
     }
 
+    // check if password is valid
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ type: UserErrors.WRONG_CREDENTIAL });
