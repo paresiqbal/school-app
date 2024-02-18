@@ -2,6 +2,7 @@
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
 // models
 import { IStudent, StudentModel } from "../models/Student";
@@ -73,7 +74,11 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     // generate token
-    const token = jwt.sign({ id: student?._id || teacher?._id }, "secret");
+    const token = jwt.sign(
+      { id: student?._id || teacher?._id },
+      process.env.JWT_SECRET
+    );
+    res.json({ token, userID: student?._id || teacher?._id });
   } catch (error) {}
 });
 
