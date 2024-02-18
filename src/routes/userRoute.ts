@@ -61,12 +61,12 @@ router.post("/login", async (req: Request, res: Response) => {
     let user = null;
     let role = "";
 
-    const student = await StudentModel.findOne({ username });
+    const student: IStudent = await StudentModel.findOne({ username });
     if (student) {
       user = student;
       role = "student";
     } else {
-      const teacher = await TeacherModel.findOne({ username });
+      const teacher: ITeacher = await TeacherModel.findOne({ username });
       if (teacher) {
         user = teacher;
         role = "teacher";
