@@ -12,6 +12,7 @@ import { ITeacher, TeacherModel } from "../models/Teacher";
 import { UserErrors } from "../enumError";
 
 const router = Router();
+dotenv.config();
 
 // register account
 router.post("/register", async (req: Request, res: Response) => {
