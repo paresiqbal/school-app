@@ -47,7 +47,7 @@ router.post("/register", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ message: "Server error while creating account." });
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
   }
 });
 
