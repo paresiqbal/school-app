@@ -55,32 +55,39 @@ router.post("/register", async (req: Request, res: Response) => {
 
 // login account
 router.post("/login", async (req: Request, res: Response) => {
-  const { username, password, role } = req.body;
+  const { username, password } = req.body;
 
   try {
+    let role = null;
     // search user in collection
     const student: IStudent = await StudentModel.findOne({ username });
     const teacher: ITeacher = await TeacherModel.findOne({ username });
-    if (!student && !teacher) {
+    if (student) {
+      role = "student";
+    } else if (teacher) {
+      role = "teacher";
+    }
+    if (!role) {
       return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
     }
 
     // check password
-    const isPasswordValid = await bcrypt.compare(
-      password,
-      student?.password || teacher?.password
-    );
+    const user = student || teacher; // Since we already determined the role, we can directly use the found user
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ type: UserErrors.WRONG_CREDENTIAL });
     }
 
     // generate token
     const token = jwt.sign(
-      { id: student?._id || teacher?._id },
+      { id: user._id, role }, // Include role in the token payload if needed for subsequent requests
       process.env.JWT_SECRET
     );
-    res.json({ token, userID: student?._id || teacher?._id });
-  } catch (error) {}
+    res.json({ token, userID: user._id, role }); // Include role in response
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+  }
 });
 
 export { router as UserRouter };
