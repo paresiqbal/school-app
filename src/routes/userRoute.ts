@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 // models
 import { IStudent, StudentModel } from "../models/Student";
 import { ITeacher, TeacherModel } from "../models/Teacher";
+import { IAdmin, AdminModel } from "../models/Admin";
 
 // error handling
 import { UserErrors } from "../enumError";
@@ -58,37 +59,37 @@ router.post("/login", async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
   try {
-    let user = null;
+    let user: IStudent | ITeacher | IAdmin | null = null;
     let role = "";
 
-    const student: IStudent = await StudentModel.findOne({ username });
+    const student = await StudentModel.findOne({ username });
     if (student) {
       user = student;
       role = "student";
     } else {
-      const teacher: ITeacher = await TeacherModel.findOne({ username });
+      const teacher = await TeacherModel.findOne({ username });
       if (teacher) {
         user = teacher;
         role = "teacher";
+      } else {
+        const admin = await AdminModel.findOne({ username }); // Attempt to find admin
+        if (admin) {
+          user = admin;
+          role = "admin"; // Set role to admin
+        }
       }
     }
 
-    // If no user was found
     if (!user) {
       return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
     }
 
-    // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ type: UserErrors.WRONG_CREDENTIAL });
     }
 
-    // Generate token
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET);
-
-    // Respond with token, userID, and role
-    console.log({ user, role });
     res.json({ token, userID: user._id, role });
   } catch (error) {
     console.error("Error:", error);
