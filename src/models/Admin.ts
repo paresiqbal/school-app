@@ -14,4 +14,4 @@ const AdminSchema = new Schema<IAdmin>({
   role: { type: String, required: true },
 });
 
-export default model<IAdmin>("Admin", AdminSchema);
+export const StudentModel = model<IAdmin>("Admin", AdminSchema);
