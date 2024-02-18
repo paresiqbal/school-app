@@ -62,6 +62,18 @@ router.post("/login", async (req: Request, res: Response) => {
     if (!student && !teacher) {
       return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
     }
+
+    // check password
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      student?.password || teacher?.password
+    );
+    if (!isPasswordValid) {
+      return res.status(400).json({ type: UserErrors.WRONG_CREDENTIAL });
+    }
+
+    // generate token
+    const token = jwt.sign({ id: student?._id || teacher?._id }, "secret");
   } catch (error) {}
 });
 
