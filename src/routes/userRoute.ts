@@ -99,4 +99,7 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// middleware
+export const verifyToken = (req: Request, res: Response, next: any) => {};
+
 export { router as UserRouter };
