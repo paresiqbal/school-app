@@ -14,9 +14,9 @@ export interface ITeacher {
 const TeacherSchema = new Schema<ITeacher>({
   username: { type: String, required: true },
   password: { type: String, required: true },
-  avatar: { type: String, required: true },
+  avatar: { type: String },
   fullName: { type: String, required: true },
-  nip: { type: String, required: true },
+  nip: { type: String },
   role: { type: String, default: "teacher" },
 });
 
