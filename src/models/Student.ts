@@ -8,6 +8,7 @@ export interface IStudent {
   role: string;
   barcode?: string;
   avatar?: string;
+  nis: string;
   fullName: string;
   yearEntry: string;
 }
@@ -18,7 +19,8 @@ const StudentSchema = new Schema<IStudent>({
   barcode: { type: String },
   role: { type: String, default: "student" },
   fullName: { type: String, required: true },
-  avatar: { type: String, required: true },
+  avatar: { type: String },
+  nis: { type: String, required: true },
   yearEntry: { type: String, required: true },
 });
 
