@@ -14,7 +14,7 @@ dotenv.config();
 
 // Register account
 router.post("/register", async (req: Request, res: Response) => {
-  const { username, password, fullName, nis, yearEntry } = req.body;
+  const { username, password, fullName, nis, yearEntry, role } = req.body;
 
   try {
     // check if username already exists in the Student collection
@@ -33,6 +33,7 @@ router.post("/register", async (req: Request, res: Response) => {
       fullName,
       nis,
       yearEntry,
+      role: "student",
     });
     await newStudent.save();
   } catch (error) {
