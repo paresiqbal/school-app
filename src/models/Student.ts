@@ -7,7 +7,10 @@ export interface IStudent {
   password: string;
   role: string;
   barcode?: string;
-  //   bio: {};
+  fullName: string;
+  avatar: string;
+  yearEntry: string;
+  // bio?: {}
 }
 
 const StudentSchema = new Schema<IStudent>({
@@ -15,7 +18,9 @@ const StudentSchema = new Schema<IStudent>({
   password: { type: String, required: true },
   barcode: { type: String },
   role: { type: String, default: "student" },
-  //   bio: { type: Object, required: true },
+  fullName: { type: String, required: true },
+  avatar: { type: String, required: true },
+  yearEntry: { type: String, required: true },
 });
 
 export const StudentModel = model<IStudent>("Student", StudentSchema);
