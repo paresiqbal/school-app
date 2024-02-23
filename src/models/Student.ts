@@ -7,10 +7,9 @@ export interface IStudent {
   password: string;
   role: string;
   barcode?: string;
+  avatar?: string;
   fullName: string;
-  avatar: string;
   yearEntry: string;
-  // bio?: {}
 }
 
 const StudentSchema = new Schema<IStudent>({

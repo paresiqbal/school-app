@@ -1,51 +1,49 @@
-// libary
 import { Router, Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
-// models
-import { IStudent, StudentModel } from "../models/Student";
+// Models
 import { ITeacher, TeacherModel } from "../models/Teacher";
 import { IAdmin, AdminModel } from "../models/Admin";
 
-// error handling
+// Error handling
 import { UserErrors } from "../enumError";
 
 const router = Router();
 dotenv.config();
 
-// register account
+// Register account
 router.post("/register", async (req: Request, res: Response) => {
-  const { username, password, role } = req.body;
+  const { username, password, role, fullName } = req.body;
 
   try {
-    // check if username already exists
-    const findStudents = await StudentModel.findOne({ username });
+    // Check if username already exists in either the Admin or Teacher collections
     const findTeachers = await TeacherModel.findOne({ username });
-    if (findStudents || findTeachers) {
+    const findAdmins = await AdminModel.findOne({ username });
+    if (findTeachers || findAdmins) {
       return res.status(400).json({ type: UserErrors.USERNAME_ALREADY_EXISTS });
     }
 
-    // hash password
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // create account
-    if (role === "student") {
-      const newStudent = new StudentModel({
-        username,
-        password: hashedPassword,
-      });
-      await newStudent.save();
-    } else if (role === "teacher") {
+    // Create account based on role
+    if (role === "teacher") {
       const newTeacher = new TeacherModel({
         username,
         password: hashedPassword,
+        fullName,
       });
-
       await newTeacher.save();
+    } else if (role === "admin") {
+      const newAdmin = new AdminModel({
+        username,
+        password: hashedPassword,
+      });
+      await newAdmin.save();
     } else {
-      // handle invalid role
+      // Handle invalid role
       return res.status(400).json({ type: UserErrors.INVALID_ROLE });
     }
   } catch (error) {
@@ -54,30 +52,24 @@ router.post("/register", async (req: Request, res: Response) => {
   }
 });
 
-// login account
+// Login account
 router.post("/login", async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
   try {
-    let user: IStudent | ITeacher | IAdmin | null = null;
+    let user: ITeacher | IAdmin | null = null;
     let role = "";
 
-    // check if user exists and match the role
-    const student = await StudentModel.findOne({ username });
-    if (student) {
-      user = student;
-      role = "student";
+    // Check if user exists and match the role
+    const teacher = await TeacherModel.findOne({ username });
+    if (teacher) {
+      user = teacher;
+      role = "teacher";
     } else {
-      const teacher = await TeacherModel.findOne({ username });
-      if (teacher) {
-        user = teacher;
-        role = "teacher";
-      } else {
-        const admin = await AdminModel.findOne({ username });
-        if (admin) {
-          user = admin;
-          role = "admin";
-        }
+      const admin = await AdminModel.findOne({ username });
+      if (admin) {
+        user = admin;
+        role = "admin";
       }
     }
 
@@ -85,12 +77,13 @@ router.post("/login", async (req: Request, res: Response) => {
       return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
     }
 
-    // check if password is valid
+    // Check if password is valid
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(400).json({ type: UserErrors.WRONG_CREDENTIAL });
     }
 
+    // Generate JWT token
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET);
     res.json({ token, userID: user._id, role });
   } catch (error) {
@@ -99,7 +92,5 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
-// middleware
-export const verifyToken = (req: Request, res: Response, next: any) => {};
-
+// Export the router
 export { router as UserRouter };
