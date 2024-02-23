@@ -34,12 +34,14 @@ router.post("/register", async (req: Request, res: Response) => {
         username,
         password: hashedPassword,
         fullName,
+        role: "teacher",
       });
       await newTeacher.save();
     } else if (role === "admin") {
       const newAdmin = new AdminModel({
         username,
         password: hashedPassword,
+        role: "admin",
       });
       await newAdmin.save();
     } else {
@@ -48,7 +50,9 @@ router.post("/register", async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
   }
 });
 
@@ -87,8 +91,10 @@ router.post("/login", async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET);
     res.json({ token, userID: user._id, role });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+    console.error("Error:", error.message);
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
   }
 });
 
