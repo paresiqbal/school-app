@@ -69,4 +69,14 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// get all students
+router.get("/students", async (req, res) => {
+  try {
+    const students = await StudentModel.find({});
+    res.json(students);
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+  }
+});
 export { router as StudentRouter };
