@@ -98,5 +98,18 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// get all teacher
+router.get("/teachers", async (req, res) => {
+  try {
+    const teachers = await TeacherModel.find({});
+    res.json(teachers);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
+  }
+});
+
 // Export the router
 export { router as UserRouter };
