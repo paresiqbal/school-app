@@ -14,6 +14,7 @@ const router = Router();
 dotenv.config();
 
 // Register account
+// Register account
 router.post("/register", async (req: Request, res: Response) => {
   const { username, password, role, fullName } = req.body;
 
@@ -48,6 +49,9 @@ router.post("/register", async (req: Request, res: Response) => {
       // Handle invalid role
       return res.status(400).json({ type: UserErrors.INVALID_ROLE });
     }
+
+    // Return success response
+    res.status(200).json({ status: "success" });
   } catch (error) {
     console.error("Error:", error);
     res
