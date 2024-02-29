@@ -15,7 +15,7 @@ dotenv.config();
 
 // Register account
 router.post("/register", async (req: Request, res: Response) => {
-  const { username, password, role, fullName } = req.body;
+  const { username, password, role, fullname, nip } = req.body;
 
   try {
     // Check if username already exists in either the Admin or Teacher collections
@@ -33,7 +33,8 @@ router.post("/register", async (req: Request, res: Response) => {
       const newTeacher = new TeacherModel({
         username,
         password: hashedPassword,
-        fullName,
+        fullname,
+        nip,
         role: "teacher",
       });
       await newTeacher.save();
@@ -41,6 +42,7 @@ router.post("/register", async (req: Request, res: Response) => {
       const newAdmin = new AdminModel({
         username,
         password: hashedPassword,
+        fullname,
         role: "admin",
       });
       await newAdmin.save();
@@ -103,6 +105,19 @@ router.get("/teachers", async (req, res) => {
   try {
     const teachers = await TeacherModel.find({});
     res.json(teachers);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
+  }
+});
+
+// get all admin
+router.get("/admins", async (req, res) => {
+  try {
+    const admins = await AdminModel.find({});
+    res.json(admins);
   } catch (error) {
     console.error("Error:", error.message);
     res

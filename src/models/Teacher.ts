@@ -6,7 +6,7 @@ export interface ITeacher {
   username: string;
   password: string;
   avatar?: string;
-  fullName: string;
+  fullname: string;
   nip: string;
   role: string;
 }
@@ -15,7 +15,7 @@ const TeacherSchema = new Schema<ITeacher>({
   username: { type: String, required: true },
   password: { type: String, required: true },
   avatar: { type: String },
-  fullName: { type: String, required: true },
+  fullname: { type: String, required: true },
   nip: { type: String },
   role: { type: String, default: "teacher" },
 });
