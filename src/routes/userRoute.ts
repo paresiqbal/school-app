@@ -126,5 +126,50 @@ router.get("/admins", async (req, res) => {
   }
 });
 
+// Edit teacher
+router.patch("/teacher/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { username, password, fullname, nip } = req.body;
+
+  try {
+    const teacher = await TeacherModel.findById(id);
+    if (!teacher) {
+      return res.status(404).json({ type: UserErrors.USER_NOT_FOUND });
+    }
+
+    // Check if username already exists and is not the same teacher
+    const findTeachers = await TeacherModel.findOne({
+      username: new RegExp(`^${username}$`, "i"),
+      _id: { $ne: id },
+    });
+    const findAdmins = await AdminModel.findOne({
+      username: new RegExp(`^${username}$`, "i"),
+    });
+    if (findTeachers || findAdmins) {
+      return res.status(409).json({ type: UserErrors.USERNAME_ALREADY_EXISTS });
+    }
+
+    // Hash password only if it's been provided
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      teacher.password = hashedPassword;
+    }
+
+    // Update teacher with provided fields
+    teacher.username = username || teacher.username;
+    teacher.fullname = fullname || teacher.fullname;
+    teacher.nip = nip || teacher.nip;
+
+    await teacher.save();
+
+    res.json(teacher);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
+  }
+});
+
 // Export the router
 export { router as UserRouter };
