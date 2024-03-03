@@ -101,7 +101,7 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // get all teacher
-router.get("/teachers", async (req, res) => {
+router.get("/teachers", async (req: Request, res: Response) => {
   try {
     const teachers = await TeacherModel.find({});
     res.json(teachers);
@@ -114,10 +114,71 @@ router.get("/teachers", async (req, res) => {
 });
 
 // get all admin
-router.get("/admins", async (req, res) => {
+router.get("/admins", async (req: Request, res: Response) => {
   try {
     const admins = await AdminModel.find({});
     res.json(admins);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
+  }
+});
+
+// get teacher by id
+router.get("/teacher/:id", async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const teacher = await TeacherModel.findById(id);
+    if (!teacher) {
+      return res.status(404).json({ type: UserErrors.USER_NOT_FOUND });
+    }
+
+    res.json(teacher);
+  } catch (error) {
+    console.error("Error:", error.message);
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
+  }
+});
+
+// update teacher data
+router.patch("/teacher/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { username, password, fullname, nip } = req.body;
+
+  try {
+    const teacher = await TeacherModel.findById(id);
+    if (!teacher) {
+      return res.status(404).json({ type: UserErrors.USER_NOT_FOUND });
+    }
+
+    const findTeachers = await TeacherModel.findOne({
+      username: new RegExp(`^${username}$`, "i"),
+      _id: { $ne: id },
+    });
+    const findAdmins = await AdminModel.findOne({
+      username: new RegExp(`^${username}$`, "i"),
+    });
+    if (findTeachers || findAdmins) {
+      return res.status(409).json({ type: UserErrors.USERNAME_ALREADY_EXISTS });
+    }
+
+    // Hash password only if it's been provided
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      teacher.password = hashedPassword;
+    }
+
+    teacher.username = username || teacher.username;
+    teacher.fullname = fullname || teacher.fullname;
+    teacher.nip = nip || teacher.nip;
+
+    await teacher.save();
+
+    res.json(teacher);
   } catch (error) {
     console.error("Error:", error.message);
     res
