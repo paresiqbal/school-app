@@ -6,7 +6,7 @@ export interface IStudent {
   username: string;
   password: string;
   role: string;
-  barcode?: string;
+  qrcode: string;
   avatar?: string;
   nis: number;
   fullName: string;
@@ -14,9 +14,9 @@ export interface IStudent {
 }
 
 const StudentSchema = new Schema<IStudent>({
-  username: { type: String, required: true },
+  username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  barcode: { type: String },
+  qrcode: { type: String, unique: true },
   role: { type: String, default: "student" },
   fullName: { type: String, required: true },
   avatar: { type: String },
