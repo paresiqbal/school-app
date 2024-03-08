@@ -79,4 +79,22 @@ router.get("/students", async (req, res) => {
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
   }
 });
+
+// get student by id
+router.get("/student/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, password, fullname, nis, yearEntry, role } = req.body;
+
+  try {
+    const student = await StudentModel.findById(id);
+    if (!student) {
+      return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
+    }
+    res.json(student);
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+  }
+});
+
 export { router as StudentRouter };
