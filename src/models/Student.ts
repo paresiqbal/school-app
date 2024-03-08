@@ -6,21 +6,19 @@ export interface IStudent {
   username: string;
   password: string;
   role: string;
-  qrcode: string;
   avatar?: string;
   nis: number;
-  fullName: string;
+  fullname: string;
   yearEntry: number;
 }
 
 const StudentSchema = new Schema<IStudent>({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  qrcode: { type: String, unique: true },
   role: { type: String, default: "student" },
-  fullName: { type: String, required: true },
+  fullname: { type: String, required: true },
   avatar: { type: String },
-  nis: { type: Number, required: true },
+  nis: { type: Number, required: true, unique: true },
   yearEntry: { type: Number, required: true },
 });
 
