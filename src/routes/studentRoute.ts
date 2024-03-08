@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import bycrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
@@ -24,7 +24,7 @@ router.post("/register", async (req: Request, res: Response) => {
     }
 
     // Hash password
-    const hashedPassword = await bycrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create account
     const newStudent = new StudentModel({
@@ -55,7 +55,7 @@ router.post("/login", async (req: Request, res: Response) => {
     }
 
     // Check if password is valid
-    const validPassword = await bycrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(400).json({ type: UserErrors.WRONG_CREDENTIAL });
     }
@@ -93,6 +93,47 @@ router.get("/student/:id", async (req, res) => {
     res.json(student);
   } catch (error) {
     console.log("Error:", error);
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+  }
+});
+
+// update student
+router.patch("/student/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, password, fullname, nis, yearEntry } = req.body;
+
+  try {
+    const student = await StudentModel.findById(id);
+    if (!student) {
+      return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
+    }
+
+    if (username) {
+      const findStudents = await StudentModel.findOne({
+        username: new RegExp(`^${username}$`, "i"),
+        _id: { $ne: id },
+      });
+      if (findStudents) {
+        return res
+          .status(400)
+          .json({ type: UserErrors.USERNAME_ALREADY_EXISTS });
+      }
+      student.username = username;
+    }
+
+    if (password && password.trim() !== "") {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      student.password = hashedPassword;
+    }
+
+    student.fullname = fullname || student.fullname;
+    student.nis = nis || student.nis;
+    student.yearEntry = yearEntry || student.yearEntry;
+
+    await student.save();
+    res.json(student);
+  } catch (error) {
+    console.error("Error:", error);
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
   }
 });
