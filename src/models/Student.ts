@@ -3,23 +3,23 @@ import { Schema, model } from "mongoose";
 
 export interface IStudent {
   _id?: string;
+  fullname: string;
   username: string;
   password: string;
-  role: string;
-  avatar?: string;
   nis: number;
-  fullname: string;
   yearEntry: number;
+  avatar?: string;
+  role: string;
 }
 
 const StudentSchema = new Schema<IStudent>({
+  fullname: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, default: "student" },
-  fullname: { type: String, required: true },
-  avatar: { type: String },
   nis: { type: Number, required: true, unique: true },
   yearEntry: { type: Number, required: true },
+  avatar: { type: String },
+  role: { type: String, default: "student" },
 });
 
 export const StudentModel = model<IStudent>("Student", StudentSchema);
