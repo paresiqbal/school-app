@@ -1,10 +1,21 @@
 // library
 import { Schema, model } from "mongoose";
 
-export interface IClass {
-  _id?: string;
-  level: string;
+export interface IMajor {
+  _id?: Schema.Types.ObjectId;
   major: string;
+}
+
+const MajorSchema = new Schema<IMajor>({
+  major: { type: String, required: true },
+});
+
+export const MajorModel = model<IMajor>("Major", MajorSchema);
+
+export interface IClass {
+  _id?: Schema.Types.ObjectId;
+  level: string;
+  major: Schema.Types.ObjectId; // Referencing Major model
 }
 
 const ClassSchema = new Schema<IClass>({
@@ -13,7 +24,7 @@ const ClassSchema = new Schema<IClass>({
     required: true,
     enum: ["X", "XI", "XII"],
   },
-  major: { type: String, required: true },
+  major: { type: Schema.Types.ObjectId, required: true, ref: "Major" },
 });
 
 export const ClassModel = model<IClass>("Class", ClassSchema);
