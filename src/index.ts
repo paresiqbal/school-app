@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 // routes
 import { UserRouter } from "./routes/userRoute";
 import { StudentRouter } from "./routes/studentRoute";
+import { ClassRouter } from "./routes/classRoute";
 
 // config
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(cors());
 // routes
 app.use("/user", UserRouter);
 app.use("/student", StudentRouter);
+app.use("/class", ClassRouter);
 
 // connect to mongodb
 mongoose.connect(

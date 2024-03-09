@@ -7,3 +7,9 @@ export enum UserErrors {
   INVALID_ROLE = "Invalid role specified",
   INVALID_CREDENTIALS = "Invalid credentials",
 }
+
+export enum ClassErrors {
+  CLASS_ALREADY_EXISTS = "Class already exists",
+  SERVER_ERROR = "Server error",
+  CLASS_NOT_FOUND = "Class not found",
+}
