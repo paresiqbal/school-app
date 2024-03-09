@@ -1,26 +1,41 @@
 import { Router, Request, Response } from "express";
 
-import { ClassModel } from "../models/Class";
+import { ClassModel, MajorModel } from "../models/Class";
 
 const router = Router();
 
-// POST route to create a new class
-router.post("/classes", async (req: Request, res: Response) => {
+// create major
+router.post("/addMajor", async (req: Request, res: Response) => {
   try {
-    const newClass = await ClassModel.create(req.body);
-    res.status(201).json(newClass);
+    const major = await MajorModel.create(req.body);
+    res.status(201).json(major);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 });
 
-// GET route to fetch all classes
-router.get("/classes", async (req, res: Response) => {
+// create class
+router.post("/addClass", async (req: Request, res: Response) => {
   try {
-    const classes = await ClassModel.find().populate("major");
-    res.json(classes);
+    const { level, majorId } = req.body;
+
+    // cek kelas
+    if (!["X", "XI", "XII"].includes(level)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid level. Must be X, XI, or XII." });
+    }
+
+    // cek jurusan
+    const major = await MajorModel.findById(majorId);
+    if (!major) {
+      return res.status(400).json({ error: "Major not found." });
+    }
+
+    const newClass = await ClassModel.create({ level, major: majorId });
+    res.status(201).json(newClass);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(400).json({ error: error.message });
   }
 });
 
