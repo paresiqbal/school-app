@@ -138,4 +138,22 @@ router.patch("/student/:id", async (req, res) => {
   }
 });
 
+// delete student
+router.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const student = await StudentModel.findById(id);
+    if (!student) {
+      return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
+    }
+
+    await StudentModel.findByIdAndDelete(id);
+    res.json({ message: "Student deleted successfully" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+  }
+});
+
 export { router as StudentRouter };
