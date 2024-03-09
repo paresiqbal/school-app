@@ -15,7 +15,7 @@ export const MajorModel = model<IMajor>("Major", MajorSchema);
 export interface IClass {
   _id?: Schema.Types.ObjectId;
   level: string;
-  major: Schema.Types.ObjectId; // Referencing Major model
+  major: Schema.Types.ObjectId;
 }
 
 const ClassSchema = new Schema<IClass>({
