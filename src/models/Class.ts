@@ -3,23 +3,17 @@ import { Schema, model } from "mongoose";
 
 export interface IClass {
   _id?: string;
-  name: string;
-  level: string; // Changed from number to string
+  level: string;
   major: string;
 }
 
 const ClassSchema = new Schema<IClass>({
-  name: { type: String, required: true, unique: true },
   level: {
     type: String,
     required: true,
-    enum: ["X", "XI", "XII"], // Updated to Roman numerals
+    enum: ["X", "XI", "XII"],
   },
-  major: {
-    type: String,
-    required: true,
-    enum: ["TKJ", "TBSM", "TKR", "TITL"],
-  },
+  major: { type: String, required: true },
 });
 
 export const ClassModel = model<IClass>("Class", ClassSchema);

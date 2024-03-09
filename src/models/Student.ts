@@ -1,5 +1,5 @@
 // library
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 
 export interface IStudent {
   _id?: string;
@@ -7,10 +7,10 @@ export interface IStudent {
   username: string;
   password: string;
   nis: number;
-  yearEntry: number;
-  class: { type: Schema.Types.ObjectId; ref: "Class"; required: true };
   avatar?: string;
   role: string;
+  yearEntry: number;
+  class?: Types.ObjectId | string;
 }
 
 const StudentSchema = new Schema<IStudent>({
@@ -21,6 +21,10 @@ const StudentSchema = new Schema<IStudent>({
   yearEntry: { type: Number, required: true },
   avatar: { type: String },
   role: { type: String, default: "student" },
+  class: {
+    type: Schema.Types.ObjectId,
+    ref: "Class",
+  },
 });
 
 export const StudentModel = model<IStudent>("Student", StudentSchema);
