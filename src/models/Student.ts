@@ -8,6 +8,7 @@ export interface IStudent {
   password: string;
   nis: number;
   yearEntry: number;
+  class: { type: Schema.Types.ObjectId; ref: "Class"; required: true };
   avatar?: string;
   role: string;
 }
