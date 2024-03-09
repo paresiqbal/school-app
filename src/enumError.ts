@@ -12,4 +12,5 @@ export enum ClassErrors {
   CLASS_ALREADY_EXISTS = "Class already exists",
   SERVER_ERROR = "Server error",
   CLASS_NOT_FOUND = "Class not found",
+  INVALID_LEVEL_OR_MAJOR = "Invalid level or major",
 }
