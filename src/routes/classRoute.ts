@@ -39,4 +39,15 @@ router.post("/addClass", async (req: Request, res: Response) => {
   }
 });
 
+// get all majors
+router.get("/majors", async (req: Request, res: Response) => {
+  try {
+    const majors = await MajorModel.find({});
+    res.json(majors);
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export { router as ClassRouter };
