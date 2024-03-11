@@ -19,20 +19,25 @@ router.post("/addClass", async (req: Request, res: Response) => {
   try {
     const { level, majorId } = req.body;
 
-    // cek kelas
+    // Check level validity
     if (!["X", "XI", "XII"].includes(level)) {
       return res
         .status(400)
         .json({ error: "Invalid level. Must be X, XI, or XII." });
     }
 
-    // cek jurusan
+    // Check for major existence and retrieve its name
     const major = await MajorModel.findById(majorId);
     if (!major) {
       return res.status(400).json({ error: "Major not found." });
     }
 
-    const newClass = await ClassModel.create({ level, major: majorId });
+    // Create the class with both majorId and majorName
+    const newClass = await ClassModel.create({
+      level,
+      majorId,
+      majorName: major.major,
+    });
     res.status(201).json(newClass);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -53,7 +58,7 @@ router.get("/majors", async (req: Request, res: Response) => {
 // get all classes
 router.get("/classes", async (req: Request, res: Response) => {
   try {
-    const classes = await ClassModel.find({}).populate("major");
+    const classes = await ClassModel.find({});
     res.json(classes);
   } catch (error) {
     console.log("Error:", error);
