@@ -36,7 +36,7 @@ router.post("/addClass", async (req: Request, res: Response) => {
     const newClass = await ClassModel.create({
       level,
       majorId,
-      majorName: major.major,
+      majorName: major.majorName,
     });
     res.status(201).json(newClass);
   } catch (error) {

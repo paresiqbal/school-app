@@ -3,11 +3,11 @@ import { Schema, model } from "mongoose";
 
 export interface IMajor {
   _id?: string;
-  major: string;
+  majorName: string;
 }
 
 const MajorSchema = new Schema<IMajor>({
-  major: { type: String, required: true },
+  majorName: { type: String, required: true },
 });
 
 export const MajorModel = model<IMajor>("Major", MajorSchema);
