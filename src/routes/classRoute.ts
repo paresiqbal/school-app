@@ -50,4 +50,15 @@ router.get("/majors", async (req: Request, res: Response) => {
   }
 });
 
+// get all classes
+router.get("/classes", async (req: Request, res: Response) => {
+  try {
+    const classes = await ClassModel.find({}).populate("major");
+    res.json(classes);
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export { router as ClassRouter };
