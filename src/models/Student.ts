@@ -10,7 +10,7 @@ export interface IStudent {
   avatar?: string;
   role: string;
   yearEntry: number;
-  class?: Types.ObjectId | string;
+  class: Types.ObjectId | string;
 }
 
 const StudentSchema = new Schema<IStudent>({
