@@ -15,7 +15,7 @@ router.post("/addMajor", async (req: Request, res: Response) => {
 });
 
 // create class
-router.post("/addClass", async (req: Request, res: Response) => {
+router.post("/addClass", async (req, res) => {
   try {
     const { level, majorId } = req.body;
 
@@ -32,12 +32,21 @@ router.post("/addClass", async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Major not found." });
     }
 
+    // Check if a class with the same level and majorId already exists
+    const existingClass = await ClassModel.findOne({ level, majorId });
+    if (existingClass) {
+      return res
+        .status(400)
+        .json({ error: "Class with the same level and major already exists." });
+    }
+
     // Create the class with both majorId and majorName
     const newClass = await ClassModel.create({
       level,
       majorId,
       majorName: major.majorName,
     });
+
     res.status(201).json(newClass);
   } catch (error) {
     res.status(400).json({ error: error.message });
