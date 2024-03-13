@@ -3,6 +3,7 @@ import { Router, Request, Response } from "express";
 
 // models
 import { ClassModel, MajorModel } from "../models/Class";
+import { ClassErrors, MajorErrors } from "../enumError";
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.post("/addMajor", async (req: Request, res: Response) => {
       majorName: req.body.majorName,
     });
     if (checkMajor) {
-      return res.status(400).json({ error: "Major already exists." });
+      return res.status(400).json({ type: MajorErrors.MAJOR_ALREADY_EXISTS });
     }
 
     const major = await MajorModel.create(req.body);
@@ -30,23 +31,19 @@ router.post("/addClass", async (req, res) => {
 
     // Check level validity
     if (!["X", "XI", "XII"].includes(level)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid level. Must be X, XI, or XII." });
+      return res.status(400).json({ type: ClassErrors.CLASS_VALIDITY });
     }
 
     // Check for major existence and retrieve its name
     const major = await MajorModel.findById(majorId);
     if (!major) {
-      return res.status(400).json({ error: "Major not found." });
+      return res.status(400).json({ type: MajorErrors.MAJOR_NOT_FOUND });
     }
 
     // Check if a class with the same level and majorId already exists
     const existingClass = await ClassModel.findOne({ level, majorId });
     if (existingClass) {
-      return res
-        .status(400)
-        .json({ error: "Class with the same level and major already exists." });
+      return res.status(400).json({ type: ClassErrors.CLASS_ALREADY_EXISTS });
     }
 
     // Create the class with both majorId and majorName
@@ -63,7 +60,7 @@ router.post("/addClass", async (req, res) => {
 });
 
 // get all majors
-router.get("/majors", async (req: Request, res: Response) => {
+router.get("/majors", async (res: Response) => {
   try {
     const majors = await MajorModel.find({});
     res.json(majors);
@@ -74,7 +71,7 @@ router.get("/majors", async (req: Request, res: Response) => {
 });
 
 // get all classes
-router.get("/classes", async (req: Request, res: Response) => {
+router.get("/classes", async (res: Response) => {
   try {
     const classes = await ClassModel.find({});
     res.json(classes);
