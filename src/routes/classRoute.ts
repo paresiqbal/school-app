@@ -1,5 +1,7 @@
+// library
 import { Router, Request, Response } from "express";
 
+// models
 import { ClassModel, MajorModel } from "../models/Class";
 
 const router = Router();
@@ -7,6 +9,13 @@ const router = Router();
 // create major
 router.post("/addMajor", async (req: Request, res: Response) => {
   try {
+    const checkMajor = await MajorModel.findOne({
+      majorName: req.body.majorName,
+    });
+    if (checkMajor) {
+      return res.status(400).json({ error: "Major already exists." });
+    }
+
     const major = await MajorModel.create(req.body);
     res.status(201).json(major);
   } catch (error) {
