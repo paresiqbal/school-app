@@ -6,6 +6,7 @@ export enum UserErrors {
   SERVER_ERROR = "Server error",
   INVALID_ROLE = "Invalid role specified",
   INVALID_CREDENTIALS = "Invalid credentials",
+  CLASS_NOT_FOUND = "Class not found",
 }
 
 export enum ClassErrors {

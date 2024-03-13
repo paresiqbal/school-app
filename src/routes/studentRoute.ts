@@ -8,19 +8,26 @@ import { IStudent, StudentModel } from "../models/Student";
 
 // Error handling
 import { UserErrors } from "../enumError";
+import { ClassModel } from "../models/Class";
 
 const router = Router();
 dotenv.config();
 
 // Register account
 router.post("/register", async (req: Request, res: Response) => {
-  const { username, password, fullname, nis, yearEntry } = req.body;
+  const { username, password, fullname, nis, yearEntry, classId } = req.body;
 
   try {
     // check if username already exists in the Student collection
     const findStudents = await StudentModel.findOne({ username });
     if (findStudents) {
       return res.status(400).json({ type: UserErrors.USERNAME_ALREADY_EXISTS });
+    }
+
+    // Check if classId is valid
+    const findClass = await ClassModel.findById(classId);
+    if (!findClass) {
+      return res.status(400).json({ type: UserErrors.CLASS_NOT_FOUND });
     }
 
     // Hash password
@@ -33,9 +40,12 @@ router.post("/register", async (req: Request, res: Response) => {
       fullname,
       nis,
       yearEntry,
+      class: classId, // Assign the classId to the class field
       role: "student",
     });
     await newStudent.save();
+
+    res.status(201).json(newStudent);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
