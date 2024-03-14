@@ -35,19 +35,18 @@ router.post("/register", async (req: Request, res: Response) => {
 
     // Create account
     const newStudent = new StudentModel({
+      fullname,
       username,
       password: hashedPassword,
-      fullname,
       nis,
+      class: classId,
       yearEntry,
-      class: classId, // Assign the classId to the class field
       role: "student",
     });
     await newStudent.save();
 
     res.status(201).json(newStudent);
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
   }
 });
@@ -74,41 +73,12 @@ router.post("/login", async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     res.json({ token, userID: user._id });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ type: UserErrors.SERVER_ERROR });
-  }
-});
-
-// get all students
-router.get("/students", async (req, res) => {
-  try {
-    const students = await StudentModel.find({});
-    res.json(students);
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ type: UserErrors.SERVER_ERROR });
-  }
-});
-
-// get student by id
-router.get("/student/:id", async (req, res) => {
-  const { id } = req.params;
-  const { username, password, fullname, nis, yearEntry, role } = req.body;
-
-  try {
-    const student = await StudentModel.findById(id);
-    if (!student) {
-      return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
-    }
-    res.json(student);
-  } catch (error) {
-    console.log("Error:", error);
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
   }
 });
 
 // update student
-router.patch("/student/:id", async (req, res) => {
+router.patch("/update/:id", async (req, res) => {
   const { id } = req.params;
   const { username, password, fullname, nis, yearEntry } = req.body;
 
@@ -143,7 +113,6 @@ router.patch("/student/:id", async (req, res) => {
     await student.save();
     res.json(student);
   } catch (error) {
-    console.error("Error:", error);
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
   }
 });
@@ -161,7 +130,32 @@ router.delete("/delete/:id", async (req, res) => {
     await StudentModel.findByIdAndDelete(id);
     res.json({ message: "Student deleted successfully" });
   } catch (error) {
-    console.error("Error:", error);
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+  }
+});
+
+// get all students
+router.get("/students", async (req, res) => {
+  try {
+    const students = await StudentModel.find({});
+    res.json(students);
+  } catch (error) {
+    res.status(500).json({ type: UserErrors.SERVER_ERROR });
+  }
+});
+
+// get student by id
+router.get("/student/:id", async (req, res) => {
+  const { id } = req.params;
+  const { username, password, fullname, nis, yearEntry, role } = req.body;
+
+  try {
+    const student = await StudentModel.findById(id);
+    if (!student) {
+      return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
+    }
+    res.json(student);
+  } catch (error) {
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
   }
 });
