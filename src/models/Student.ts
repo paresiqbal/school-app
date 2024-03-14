@@ -11,6 +11,13 @@ export interface IStudent {
   role: string;
   yearEntry: number;
   class: Types.ObjectId | string;
+  attendanceStatus?: AttendanceStatus;
+}
+
+export enum AttendanceStatus {
+  Present = "present",
+  Absent = "absent",
+  Excuse = "excuse",
 }
 
 const StudentSchema = new Schema<IStudent>({
@@ -24,6 +31,11 @@ const StudentSchema = new Schema<IStudent>({
   class: {
     type: Schema.Types.ObjectId,
     ref: "Class",
+  },
+  attendanceStatus: {
+    type: String,
+    enum: ["present", "excuse", "absent"],
+    default: null,
   },
 });
 
