@@ -1,58 +1,63 @@
-import { AttendanceModel } from "../models/Attendance";
-import { ClassModel } from "../models/Class";
 import { StudentModel } from "../models/Student";
+import { ClassModel } from "../models/Class";
 import { TeacherModel } from "../models/Teacher";
+import { AttendanceModel } from "../models/Attendance";
+import { Types } from "mongoose"; // Import Types for ObjectId type
 
-// Updated function to create attendance records for all students in the same class
 export async function attendanceRecord(
   studentId: string,
   teacherId: string,
+  classId: string,
   date: Date
 ) {
   try {
-    const initiatingStudent = await StudentModel.findById(studentId);
-    if (!initiatingStudent) {
-      throw new Error("Student not found");
-    }
+    // Validate class and teacher exist
+    const classExists = await ClassModel.findById(classId);
+    if (!classExists) throw new Error("Class not found");
 
-    const classInfo = await ClassModel.findById(initiatingStudent.class);
-    if (!classInfo) {
-      throw new Error("Class not found");
-    }
+    const teacherExists = await TeacherModel.findById(teacherId);
+    if (!teacherExists) throw new Error("Teacher not found");
 
-    const teacher = await TeacherModel.findById(teacherId);
-    if (!teacher) {
-      throw new Error("Teacher not found");
-    }
-
+    // Fetch all students in the class
     const studentsInClass = await StudentModel.find({
-      class: initiatingStudent.class,
+      class: new Types.ObjectId(classId),
     });
 
-    const studentsRecord = studentsInClass.map((studentInClass) => {
-      // Mark the initiating student differently, others as absent
-      const status =
-        studentInClass._id.toString() === studentId ? "present" : "absent";
+    // Prepare updates for students' attendance status and create attendance records
+    const attendanceOperations = studentsInClass.map(async (student) => {
+      const isInitiatingStudent = student._id.toString() === studentId;
+      const attendanceStatus = isInitiatingStudent ? "present" : "absent";
 
-      return {
-        id: studentInClass._id.toString(),
-        fullname: studentInClass.fullname,
-        class: classInfo.level + "-" + classInfo.majorName,
-        status: status,
-      };
+      // Update student's attendance status
+      await StudentModel.updateOne(
+        { _id: student._id },
+        { $set: { attendanceStatus } }
+      );
+
+      // Create a new attendance record
+      const newAttendanceRecord = new AttendanceModel({
+        date: date,
+        student: student._id,
+        teacher: teacherId,
+        class: classId,
+      });
+
+      return newAttendanceRecord.save();
     });
 
-    // Optionally, here you can also save the attendance records to the database
-    // before returning the response.
+    // Execute all operations
+    await Promise.all(attendanceOperations);
 
+    // Optionally, return a meaningful response
     return {
-      "attendance-class": classInfo.level + "-" + classInfo.majorName,
+      message: "Attendance updated and records created successfully",
       date: date.toISOString().split("T")[0],
-      teacher: teacher.fullname,
-      "students-record": studentsRecord,
+      class: classId,
+      teacher: teacherId,
+      // Additional details can be included as needed
     };
   } catch (error) {
-    console.error("Failed to create and format attendance records", error);
+    console.error("Failed to update attendance and create records", error);
     throw error;
   }
 }
