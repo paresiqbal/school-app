@@ -51,7 +51,6 @@ router.post("/register", async (req: Request, res: Response) => {
       return res.status(400).json({ type: UserErrors.INVALID_ROLE });
     }
   } catch (error) {
-    console.error("Error:", error);
     res
       .status(500)
       .json({ type: UserErrors.SERVER_ERROR, error: error.message });
@@ -93,7 +92,6 @@ router.post("/login", async (req: Request, res: Response) => {
     const token = jwt.sign({ id: user._id, role }, process.env.JWT_SECRET);
     res.json({ token, userID: user._id, role });
   } catch (error) {
-    console.error("Error:", error.message);
     res
       .status(500)
       .json({ type: UserErrors.SERVER_ERROR, error: error.message });
@@ -106,7 +104,6 @@ router.get("/teachers", async (req: Request, res: Response) => {
     const teachers = await TeacherModel.find({});
     res.json(teachers);
   } catch (error) {
-    console.error("Error:", error.message);
     res
       .status(500)
       .json({ type: UserErrors.SERVER_ERROR, error: error.message });
@@ -119,7 +116,6 @@ router.get("/admins", async (req: Request, res: Response) => {
     const admins = await AdminModel.find({});
     res.json(admins);
   } catch (error) {
-    console.error("Error:", error.message);
     res
       .status(500)
       .json({ type: UserErrors.SERVER_ERROR, error: error.message });
@@ -137,7 +133,6 @@ router.get("/teacher/:id", async (req: Request, res: Response) => {
 
     res.json(teacher);
   } catch (error) {
-    console.error("Error:", error.message);
     res
       .status(500)
       .json({ type: UserErrors.SERVER_ERROR, error: error.message });
@@ -145,7 +140,7 @@ router.get("/teacher/:id", async (req: Request, res: Response) => {
 });
 
 // update teacher data
-router.patch("/teacher/:id", async (req: Request, res: Response) => {
+router.patch("/updateTeacher/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { username, password, fullname, nip } = req.body;
 
@@ -180,7 +175,6 @@ router.patch("/teacher/:id", async (req: Request, res: Response) => {
 
     res.json(teacher);
   } catch (error) {
-    console.error("Error:", error.message);
     res
       .status(500)
       .json({ type: UserErrors.SERVER_ERROR, error: error.message });
