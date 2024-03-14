@@ -43,11 +43,15 @@ router.post("/addClass", async (req: Request, res: Response) => {
       return res.status(400).json({ type: ClassErrors.CLASS_ALREADY_EXISTS });
     }
 
+    // concatenate level and majorName to create classLabel
+    const classLabel = `${level} - ${major.majorName} `;
+
     // Create the class with both majorId and majorName
     const newClass = await ClassModel.create({
       level,
       majorId,
       majorName: major.majorName,
+      classLabel,
     });
 
     res.status(201).json(newClass);
