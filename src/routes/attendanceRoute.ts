@@ -8,8 +8,12 @@ const router = Router();
 // get student base on class
 router.post("/check-attendance", async (req, res) => {
   try {
-    const { studentId, date } = req.body;
-    const formattedOutput = await attendanceRecord(studentId, new Date(date));
+    const { studentId, teacherId, date } = req.body;
+    const formattedOutput = await attendanceRecord(
+      studentId,
+      teacherId,
+      new Date(date)
+    );
     res.status(201).json(formattedOutput);
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
