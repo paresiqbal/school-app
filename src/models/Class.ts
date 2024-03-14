@@ -17,12 +17,14 @@ export interface IClass {
   level: string;
   majorId: string;
   majorName: string;
+  classLabel: string;
 }
 
 const ClassSchema = new Schema<IClass>({
   level: { type: String, required: true, enum: ["X", "XI", "XII"] },
   majorId: { type: String, required: true },
   majorName: { type: String, required: true },
+  classLabel: { type: String, required: true },
 });
 
 export const ClassModel = model<IClass>("Class", ClassSchema);
