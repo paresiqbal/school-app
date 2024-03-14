@@ -137,7 +137,10 @@ router.delete("/delete/:id", async (req, res) => {
 // get all students
 router.get("/students", async (req, res) => {
   try {
-    const students = await StudentModel.find({});
+    const students = await StudentModel.find({}).populate(
+      "class",
+      "level majorName"
+    );
     res.json(students);
   } catch (error) {
     res.status(500).json({ type: UserErrors.SERVER_ERROR });
@@ -150,7 +153,10 @@ router.get("/student/:id", async (req, res) => {
   const { username, password, fullname, nis, yearEntry, role } = req.body;
 
   try {
-    const student = await StudentModel.findById(id);
+    const student = await StudentModel.findById(id).populate(
+      "class",
+      "level majorName"
+    );
     if (!student) {
       return res.status(400).json({ type: UserErrors.USER_NOT_FOUND });
     }
