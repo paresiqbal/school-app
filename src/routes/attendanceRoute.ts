@@ -1,30 +1,19 @@
 // libarry
 import { Router, Request, Response } from "express";
-import { AttendanceModel } from "../models/Attendance";
+import { StudentModel } from "../models/Student";
 
 const router = Router();
 
-// record attendance route
-router.post("record-attendance", async (req: Request, res: Response) => {
-  const { studentId, teacherId, status } = req.body;
-  const date = new Date();
-
+// get student base on class
+router.get("/specific-class/:classId", async (req: Request, res: Response) => {
   try {
-    const attendance = new AttendanceModel(
-      {
-        student: studentId,
-        teacher: teacherId,
-        date: date.toISOString().slice(0, 10),
-      },
-      { status: status },
-      { new: true, upsert: true }
+    const classId = req.params.classId;
+    const students = await StudentModel.find({ class: classId }).populate(
+      "class"
     );
-
-    res.status(200).json(attendance);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ error: "An error occurred while recording attendance." });
+    res.json(students);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 

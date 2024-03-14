@@ -11,8 +11,8 @@ export interface IAttendance {
 
 const AttendanceSchema = new Schema<IAttendance>({
   date: { type: Date, required: true },
-  student: { type: Schema.Types.ObjectId, ref: "Student", required: true },
   teacher: { type: Schema.Types.ObjectId, ref: "Teacher", required: true },
+  student: { type: Schema.Types.ObjectId, ref: "Student", required: true },
   class: { type: Schema.Types.ObjectId, ref: "Class", required: true },
   status: {
     type: String,

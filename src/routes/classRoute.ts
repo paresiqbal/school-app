@@ -2,6 +2,7 @@ import { Router, Request, Response } from "express";
 
 import { ClassModel, MajorModel } from "../models/Class";
 import { ClassErrors, MajorErrors } from "../enumError";
+import { StudentModel } from "../models/Student";
 
 const router = Router();
 
@@ -37,7 +38,6 @@ router.post("/addClass", async (req: Request, res: Response) => {
       return res.status(400).json({ type: MajorErrors.MAJOR_NOT_FOUND });
     }
 
-    // Check if a class with the same level and majorId already exists
     const existingClass = await ClassModel.findOne({ level, majorId });
     if (existingClass) {
       return res.status(400).json({ type: ClassErrors.CLASS_ALREADY_EXISTS });
@@ -46,7 +46,6 @@ router.post("/addClass", async (req: Request, res: Response) => {
     // concatenate level and majorName to create classLabel
     const classLabel = `${level} - ${major.majorName} `;
 
-    // Create the class with both majorId and majorName
     const newClass = await ClassModel.create({
       level,
       majorId,
@@ -77,6 +76,19 @@ router.get("/classes", async (req: Request, res: Response) => {
     res.json(classes);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+});
+
+// get student base on class
+router.get("/specific-class/:classId", async (req: Request, res: Response) => {
+  try {
+    const classId = req.params.classId;
+    const students = await StudentModel.find({ class: classId }).populate(
+      "class"
+    );
+    res.json(students);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 });
 
