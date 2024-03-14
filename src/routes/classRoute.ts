@@ -10,9 +10,9 @@ const router = Router();
 // create major
 router.post("/addMajor", async (req: Request, res: Response) => {
   try {
-    const checkMajor = await MajorModel.findOne({
-      majorName: req.body.majorName,
-    });
+    const { majorName } = req.body;
+    const checkMajor = await MajorModel.findOne({ majorName });
+
     if (checkMajor) {
       return res.status(400).json({ type: MajorErrors.MAJOR_ALREADY_EXISTS });
     }
@@ -25,7 +25,7 @@ router.post("/addMajor", async (req: Request, res: Response) => {
 });
 
 // create class
-router.post("/addClass", async (req, res) => {
+router.post("/addClass", async (req: Request, res: Response) => {
   try {
     const { level, majorId } = req.body;
 
@@ -62,10 +62,9 @@ router.post("/addClass", async (req, res) => {
 // get all majors
 router.get("/majors", async (res: Response) => {
   try {
-    const majors = await MajorModel.find({});
+    const majors = await MajorModel.find({}).lean();
     res.json(majors);
   } catch (error) {
-    console.log("Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -73,10 +72,9 @@ router.get("/majors", async (res: Response) => {
 // get all classes
 router.get("/classes", async (res: Response) => {
   try {
-    const classes = await ClassModel.find({});
+    const classes = await ClassModel.find({}).lean();
     res.json(classes);
   } catch (error) {
-    console.log("Error:", error);
     res.status(500).json({ error: error.message });
   }
 });
