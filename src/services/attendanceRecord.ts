@@ -4,40 +4,51 @@ import { StudentModel } from "../models/Student";
 import { TeacherModel } from "../models/Teacher";
 
 // Updated function to create attendance records for all students in the same class
-export async function attendanceRecord(studentId, teacherId, date) {
+export async function attendanceRecord(
+  studentId: string,
+  teacherId: string,
+  date: Date
+) {
   try {
-    const student = await StudentModel.findById(studentId);
-    if (!student) {
+    const initiatingStudent = await StudentModel.findById(studentId);
+    if (!initiatingStudent) {
       throw new Error("Student not found");
     }
 
-    const classInfo = await ClassModel.findById(student.class);
+    const classInfo = await ClassModel.findById(initiatingStudent.class);
     if (!classInfo) {
       throw new Error("Class not found");
     }
 
-    // Find the teacher by the provided ID
     const teacher = await TeacherModel.findById(teacherId);
     if (!teacher) {
       throw new Error("Teacher not found");
     }
 
-    // Assuming the teacher model has a name field
-    const teacherName = teacher.fullname;
+    const studentsInClass = await StudentModel.find({
+      class: initiatingStudent.class,
+    });
 
-    const studentsInClass = await StudentModel.find({ class: student.class });
+    const studentsRecord = studentsInClass.map((studentInClass) => {
+      // Mark the initiating student differently, others as absent
+      const status =
+        studentInClass._id.toString() === studentId ? "present" : "absent";
 
-    const studentsRecord = studentsInClass.map((studentInClass) => ({
-      id: studentInClass._id.toString(),
-      fullname: studentInClass.fullname,
-      class: classInfo.level + "-" + classInfo.majorName,
-      status: "present", // Adjust this as needed
-    }));
+      return {
+        id: studentInClass._id.toString(),
+        fullname: studentInClass.fullname,
+        class: classInfo.level + "-" + classInfo.majorName,
+        status: status,
+      };
+    });
+
+    // Optionally, here you can also save the attendance records to the database
+    // before returning the response.
 
     return {
       "attendance-class": classInfo.level + "-" + classInfo.majorName,
       date: date.toISOString().split("T")[0],
-      teacher: teacherName,
+      teacher: teacher.fullname,
       "students-record": studentsRecord,
     };
   } catch (error) {
