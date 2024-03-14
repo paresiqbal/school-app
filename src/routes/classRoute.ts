@@ -1,7 +1,5 @@
-// library
 import { Router, Request, Response } from "express";
 
-// models
 import { ClassModel, MajorModel } from "../models/Class";
 import { ClassErrors, MajorErrors } from "../enumError";
 
@@ -12,7 +10,6 @@ router.post("/addMajor", async (req: Request, res: Response) => {
   try {
     const { majorName } = req.body;
     const checkMajor = await MajorModel.findOne({ majorName });
-
     if (checkMajor) {
       return res.status(400).json({ type: MajorErrors.MAJOR_ALREADY_EXISTS });
     }
@@ -60,9 +57,9 @@ router.post("/addClass", async (req: Request, res: Response) => {
 });
 
 // get all majors
-router.get("/majors", async (res: Response) => {
+router.get("/majors", async (req: Request, res: Response) => {
   try {
-    const majors = await MajorModel.find({}).lean();
+    const majors = await MajorModel.find({});
     res.json(majors);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -70,9 +67,9 @@ router.get("/majors", async (res: Response) => {
 });
 
 // get all classes
-router.get("/classes", async (res: Response) => {
+router.get("/classes", async (req: Request, res: Response) => {
   try {
-    const classes = await ClassModel.find({}).lean();
+    const classes = await ClassModel.find({});
     res.json(classes);
   } catch (error) {
     res.status(500).json({ error: error.message });
