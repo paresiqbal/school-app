@@ -5,6 +5,7 @@ export interface IAttendance {
   date: Date;
   student: Types.ObjectId;
   teacher: Types.ObjectId;
+  class: Types.ObjectId;
   status: "present" | "sick" | "absent";
 }
 
@@ -12,6 +13,7 @@ const AttendanceSchema = new Schema<IAttendance>({
   date: { type: Date, required: true },
   student: { type: Schema.Types.ObjectId, ref: "Student", required: true },
   teacher: { type: Schema.Types.ObjectId, ref: "Teacher", required: true },
+  class: { type: Schema.Types.ObjectId, ref: "Class", required: true },
   status: {
     type: String,
     enum: ["present", "sick", "absent"],
