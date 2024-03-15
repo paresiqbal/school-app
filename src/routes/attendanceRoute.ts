@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { attendanceRecord } from "../services/attendanceRecord";
+import { createAndUpdateAttendanceRecords } from "../services/attendanceRecord";
 
 const router = Router();
 
@@ -7,7 +7,7 @@ const router = Router();
 router.post("/check-attendance", async (req: Request, res: Response) => {
   try {
     const { studentId, teacherId, classId, date } = req.body;
-    const formattedOutput = await attendanceRecord(
+    const formattedOutput = await createAndUpdateAttendanceRecords(
       studentId,
       teacherId,
       classId,
