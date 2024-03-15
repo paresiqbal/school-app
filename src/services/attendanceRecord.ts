@@ -11,51 +11,33 @@ export async function attendanceRecord(
   date: Date
 ) {
   try {
-    // Validate class and teacher exist
-    const classExists = await ClassModel.findById(classId);
-    if (!classExists) throw new Error("Class not found");
+    const classInfo = await ClassModel.findById(classId);
+    if (!classInfo) throw new Error("Class not found");
 
-    const teacherExists = await TeacherModel.findById(teacherId);
-    if (!teacherExists) throw new Error("Teacher not found");
+    const teacher = await TeacherModel.findById(teacherId);
+    if (!teacher) throw new Error("Teacher not found");
 
-    // Fetch all students in the class
-    const studentsInClass = await StudentModel.find({
-      class: new Types.ObjectId(classId),
-    });
+    const studentsInClass = await StudentModel.find({ class: classId });
 
-    // Prepare updates for students' attendance status and create attendance records
-    const attendanceOperations = studentsInClass.map(async (student) => {
-      const isInitiatingStudent = student._id.toString() === studentId;
-      const attendanceStatus = isInitiatingStudent ? "present" : "absent";
+    // Assuming status updates and record creations happen here
 
-      // Update student's attendance status
-      await StudentModel.updateOne(
-        { _id: student._id },
-        { $set: { attendanceStatus } }
-      );
+    // Map students to the desired output format
+    const studentsRecord = studentsInClass.map((student) => ({
+      id: student._id.toString(),
+      fullname: student.fullname,
+      class: `${classInfo.level}-${classInfo.majorName}`, // Or however you format this
+      status: student._id.toString() === studentId ? "present" : "absent", // Simplified logic
+    }));
 
-      // Create a new attendance record
-      const newAttendanceRecord = new AttendanceModel({
-        date: date,
-        student: student._id,
-        teacher: teacherId,
-        class: classId,
-      });
-
-      return newAttendanceRecord.save();
-    });
-
-    // Execute all operations
-    await Promise.all(attendanceOperations);
-
-    // Optionally, return a meaningful response
-    return {
-      message: "Attendance updated and records created successfully",
+    // Construct the response object
+    const response = {
+      "attendance-class": `${classInfo.level}-${classInfo.majorName}`,
       date: date.toISOString().split("T")[0],
-      class: classId,
-      teacher: teacherId,
-      // Additional details can be included as needed
+      teacher: teacher.fullname,
+      "students-record": studentsRecord,
     };
+
+    return response;
   } catch (error) {
     console.error("Failed to update attendance and create records", error);
     throw error;
