@@ -5,7 +5,6 @@ import { AttendanceModel } from "../models/Attendance";
 import { Types } from "mongoose"; // Import Types for ObjectId
 
 export async function attendanceRecord(
-  studentId: string,
   teacherId: string,
   classId: string,
   date: Date
@@ -24,27 +23,24 @@ export async function attendanceRecord(
       class: new Types.ObjectId(classId),
     });
 
-    let studentsRecord = [];
+    const attendanceRecords = studentsInClass.map((student) => ({
+      date: date,
+      student: student._id,
+      teacher: teacherId,
+      class: classId,
+      status: "absent",
+    }));
 
-    for (const student of studentsInClass) {
-      const isInitiatingStudent = student._id.toString() === studentId;
-      const status = isInitiatingStudent ? "present" : "absent";
+    await AttendanceModel.insertMany(attendanceRecords);
 
-      await new AttendanceModel({
-        date: date,
-        student: student._id,
-        teacher: teacherId,
-        class: classId,
-        status: status,
-      }).save();
-
-      studentsRecord.push({
-        id: student._id.toString(),
-        fullname: student.fullname,
-        class: classExists.level + "-" + classExists.majorName,
-        status: status,
-      });
-    }
+    let studentsRecord = attendanceRecords.map((record) => ({
+      id: record.student.toString(),
+      fullname: studentsInClass.find(
+        (s) => s._id.toString() === record.student.toString()
+      )?.fullname,
+      class: classExists.level + "-" + classExists.majorName,
+      status: record.status,
+    }));
 
     return {
       "attendance-class": classExists.level + "-" + classExists.majorName,
