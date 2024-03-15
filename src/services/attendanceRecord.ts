@@ -7,7 +7,8 @@ import { Types } from "mongoose"; // Import Types for ObjectId
 export async function attendanceRecord(
   teacherId: string,
   classId: string,
-  date: Date
+  date: Date | string,
+  studentId: string // Add this parameter
 ) {
   try {
     if (typeof date === "string") {
@@ -23,12 +24,13 @@ export async function attendanceRecord(
       class: new Types.ObjectId(classId),
     });
 
+    // Modify the mapping to check if the current student is the initiating student
     const attendanceRecords = studentsInClass.map((student) => ({
       date: date,
       student: student._id,
       teacher: teacherId,
       class: classId,
-      status: "absent",
+      status: student._id.toString() === studentId ? "present" : "absent", // Check if the student is the initiator
     }));
 
     await AttendanceModel.insertMany(attendanceRecords);
