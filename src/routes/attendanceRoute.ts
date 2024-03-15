@@ -1,22 +1,47 @@
 import { Router, Request, Response } from "express";
-import { createAndUpdateAttendanceRecords } from "../services/attendanceRecord";
+import { AttendanceModel } from "../models/Attendance";
+import { ClassModel } from "../models/Class";
+import { StudentModel } from "../models/Student";
+import { TeacherModel } from "../models/Teacher";
 
 const router = Router();
 
-// Endpoint to check and record attendance for a class based on a single student's check-in
-router.post("/check-attendance", async (req: Request, res: Response) => {
+router.post("/recordAttendance", async (req: Request, res: Response) => {
   try {
-    const { studentId, teacherId, classId, date } = req.body;
-    const formattedOutput = await createAndUpdateAttendanceRecords(
-      studentId,
-      teacherId,
-      classId,
-      new Date(date)
-    );
-    res.status(201).json(formattedOutput);
+    const { studentId, classId, teacherId } = req.body;
+
+    // Validate that the class and teacher exist
+    const existingClass = await ClassModel.findById(classId);
+    const existingTeacher = await TeacherModel.findById(teacherId);
+
+    if (!existingClass || !existingTeacher) {
+      return res.status(404).send("Class or teacher not found.");
+    }
+
+    // Find all students in the class
+    const students = await StudentModel.find({ class: classId });
+
+    if (students.length === 0) {
+      return res.status(404).send("No students found in the class.");
+    }
+
+    // Create attendance records
+    const attendanceRecords = students.map((student) => ({
+      date: new Date(), // Current date
+      class: classId,
+      teacher: teacherId,
+      student: student._id,
+      status: student._id.toString() === studentId ? "present" : "absent", // Mark the initiating student as present, others as absent
+    }));
+
+    // Save all attendance records to the database
+    await AttendanceModel.insertMany(attendanceRecords);
+
+    res.status(201).send("Attendance records created successfully.");
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Failed to record attendance:", error);
+    res.status(500).send("Internal server error.");
   }
 });
 
-export { router as AttendanceRouter };
+export default router;
