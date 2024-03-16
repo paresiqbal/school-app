@@ -26,22 +26,18 @@ router.post("/mark", async (req: Request, res: Response) => {
       if (studentIndex !== -1) {
         // If the student is already present, return with a message
         if (existingAttendance.students[studentIndex].isPresent === "present") {
-          return res
-            .status(400)
-            .json({
-              message:
-                "Attendance record already exists for this student on the given date",
-            });
+          return res.status(400).json({
+            message:
+              "Attendance record already exists for this student on the given date",
+          });
         }
         // Otherwise, update the existing record with the new student's presence
         existingAttendance.students[studentIndex].isPresent = "present";
         await existingAttendance.save();
-        return res
-          .status(200)
-          .json({
-            message: "Attendance updated successfully",
-            attendance: existingAttendance,
-          });
+        return res.status(200).json({
+          message: "Attendance updated successfully",
+          attendance: existingAttendance,
+        });
       }
     }
 
