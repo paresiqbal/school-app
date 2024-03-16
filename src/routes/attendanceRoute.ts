@@ -11,6 +11,40 @@ router.post("/mark", async (req: Request, res: Response) => {
   try {
     const { date, teacherId, studentId, classId } = req.body;
 
+    // Check if an existing attendance record exists for the given classId, studentId, and date
+    let existingAttendance = await AttendanceModel.findOne({
+      date,
+      class: classId,
+    });
+
+    // If an existing record is found
+    if (existingAttendance) {
+      // Check if the studentId is different
+      const studentIndex = existingAttendance.students.findIndex(
+        (s: any) => s.id.toString() === studentId
+      );
+      if (studentIndex !== -1) {
+        // If the student is already present, return with a message
+        if (existingAttendance.students[studentIndex].isPresent === "present") {
+          return res
+            .status(400)
+            .json({
+              message:
+                "Attendance record already exists for this student on the given date",
+            });
+        }
+        // Otherwise, update the existing record with the new student's presence
+        existingAttendance.students[studentIndex].isPresent = "present";
+        await existingAttendance.save();
+        return res
+          .status(200)
+          .json({
+            message: "Attendance updated successfully",
+            attendance: existingAttendance,
+          });
+      }
+    }
+
     // Find the teacher and verify if exists
     const teacher = await TeacherModel.findById(teacherId);
     if (!teacher) {
