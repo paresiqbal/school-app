@@ -35,7 +35,7 @@ const StudentSchema = new Schema<IStudent>({
   attendanceStatus: {
     type: String,
     enum: ["present", "excuse", "absent"],
-    default: null,
+    default: AttendanceStatus.Absent,
   },
 });
 

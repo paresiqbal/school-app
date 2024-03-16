@@ -1,17 +1,41 @@
-import { Router } from "express";
-import { attendanceRecord } from "../services/attendanceRecord";
+import { Router, Request, Response } from "express";
+import { TeacherModel } from "../models/Teacher";
+import { AttendanceStatus, StudentModel } from "../models/Student";
 
 const router = Router();
 
-router.post("/check-attendance", async (req, res) => {
-  const { teacherId, classId, date, studentId } = req.body; // Include studentId in the destructuring
+router.post("/check-attendance", async (req: Request, res: Response) => {
+  const { teacherId, studentId, classId, date } = req.body;
 
   try {
-    // Pass studentId to the function
-    const result = await attendanceRecord(teacherId, classId, date, studentId);
-    res.status(201).json(result); // Consider using 201 for creation
+    const teacher = await TeacherModel.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ error: "Teacher not found" });
+    }
+
+    const student = await StudentModel.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    const attendanceReport = {
+      "attendance-class": classId,
+      date,
+      teacher: teacher.fullname,
+      "students-record": [
+        {
+          id: student._id,
+          fullname: student.fullname,
+          class: classId,
+          status: student.attendanceStatus || AttendanceStatus.Absent,
+        },
+      ],
+    };
+
+    res.json(attendanceReport);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error while checking attendance:", error);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
