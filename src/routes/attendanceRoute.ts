@@ -3,7 +3,7 @@ import createAttendanceClassRecord from "../services/attendanceRecord";
 
 const router = Router();
 
-router.post("/api/attendance", async (req, res) => {
+router.post("/check-attendance", async (req, res) => {
   try {
     await createAttendanceClassRecord(req, res);
     // The response is handled inside the createAttendanceClassRecord function
