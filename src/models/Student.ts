@@ -1,25 +1,16 @@
 // library
 import { Schema, model } from "mongoose";
 
-export enum AttendanceStatus {
-  Present = "present",
-  Absent = "absent",
-  Excuse = "excuse",
-}
-
 export interface IStudent {
   _id?: string;
   fullname: string;
   username: string;
   password: string;
-  nis: number; // Unique student identifier (NIS)
+  nis: number;
   yearEntry: number;
-  avatar?: string; // Optional avatar URL
+  avatar?: string;
   role: string;
-  class: Schema.Types.ObjectId; // Reference to the Class model
-  attendance: {
-    [date: string]: AttendanceStatus; // Attendance record for each day
-  };
+  class: Schema.Types.ObjectId;
 }
 
 const StudentSchema = new Schema<IStudent>({
@@ -31,10 +22,6 @@ const StudentSchema = new Schema<IStudent>({
   avatar: { type: String },
   role: { type: String, default: "student" },
   class: { type: Schema.Types.ObjectId, ref: "Class" },
-  attendance: {
-    type: Object,
-    default: {},
-  },
 });
 
 export const StudentModel = model<IStudent>("Student", StudentSchema);
