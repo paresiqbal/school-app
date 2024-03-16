@@ -8,6 +8,7 @@ export enum AttendanceStatus {
 }
 
 export interface IStudent {
+  _id?: string;
   fullname: string;
   username: string;
   password: string;
