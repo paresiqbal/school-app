@@ -42,11 +42,25 @@ router.post("/mark", async (req: Request, res: Response) => {
     const studentsInClass = await StudentModel.find({ class: classId });
 
     const studentsAttendance = studentsInClass.map((student: IStudent) => ({
-      id: new Types.ObjectId(student._id.toString()), // Convert student._id to ObjectId
+      id: new Types.ObjectId(student._id.toString()),
       fullname: student.fullname,
-      class: new Types.ObjectId(classId.toString()), // Convert classId to ObjectId
-      isPresent: student._id.toString() === studentId ? "present" : "absent", // Mark the present student as present
+      class: new Types.ObjectId(classId.toString()),
+      isPresent: student._id.toString() === studentId ? "present" : "absent",
     }));
+
+    // const studentsAttendance = studentsInClass.map((student: IStudent) => ({
+    //   id: new Types.ObjectId(student._id.toString()),
+    //   fullname: student.fullname,
+    //   class: new Types.ObjectId(classId.toString()),
+    //   isPresent: student._id.toString() === studentId ? "present" : "absent", // Mark the student as present if the IDs match
+    // }));
+
+    const presentStudentIndex = studentsAttendance.findIndex(
+      (student) => student.id === new Types.ObjectId(studentId)
+    );
+    if (presentStudentIndex !== -1) {
+      studentsAttendance[presentStudentIndex].isPresent = "present";
+    }
 
     attendanceData.students = studentsAttendance;
 
