@@ -48,13 +48,6 @@ router.post("/mark", async (req: Request, res: Response) => {
       isPresent: student._id.toString() === studentId ? "present" : "absent",
     }));
 
-    // const studentsAttendance = studentsInClass.map((student: IStudent) => ({
-    //   id: new Types.ObjectId(student._id.toString()),
-    //   fullname: student.fullname,
-    //   class: new Types.ObjectId(classId.toString()),
-    //   isPresent: student._id.toString() === studentId ? "present" : "absent", // Mark the student as present if the IDs match
-    // }));
-
     const presentStudentIndex = studentsAttendance.findIndex(
       (student) => student.id === new Types.ObjectId(studentId)
     );
