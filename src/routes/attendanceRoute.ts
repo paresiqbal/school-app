@@ -1,0 +1,65 @@
+import express, { Request, Response } from "express";
+import { Types } from "mongoose";
+import { AttendanceModel, IAttendance } from "../models/Attendance";
+import { StudentModel, IStudent } from "../models/Student";
+import { ClassModel } from "../models/Class";
+import { TeacherModel } from "../models/Teacher";
+
+const router = express.Router();
+
+router.post("/mark", async (req: Request, res: Response) => {
+  try {
+    const { date, teacherId, studentId, classId } = req.body;
+
+    // Find the teacher and verify if exists
+    const teacher = await TeacherModel.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    // Find the class and verify if exists
+    const classInfo = await ClassModel.findById(classId);
+    if (!classInfo) {
+      return res.status(404).json({ message: "Class not found" });
+    }
+
+    // Find the student and verify if exists
+    const student = await StudentModel.findById(studentId);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    // Create attendance record
+    const attendanceData: IAttendance = {
+      date,
+      class: classId,
+      teacher: teacherId,
+      timestamp: new Date(), // Use new Date() to get the current date and time
+      students: [],
+    };
+
+    // Get all students in the class
+    const studentsInClass = await StudentModel.find({ class: classId });
+
+    const studentsAttendance = studentsInClass.map((student: IStudent) => ({
+      id: new Types.ObjectId(student._id.toString()), // Convert student._id to ObjectId
+      fullname: student.fullname,
+      class: new Types.ObjectId(classId.toString()), // Convert classId to ObjectId
+      isPresent: student._id.toString() === studentId ? "present" : "absent", // Mark the present student as present
+    }));
+
+    attendanceData.students = studentsAttendance;
+
+    // Save attendance record
+    const attendance = new AttendanceModel(attendanceData);
+    await attendance.save();
+
+    res
+      .status(201)
+      .json({ message: "Attendance marked successfully", attendance });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to mark attendance", error });
+  }
+});
+
+export { router as AttendanceRouter };
