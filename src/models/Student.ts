@@ -1,23 +1,24 @@
 // library
-import { Schema, Types, model } from "mongoose";
-
-export interface IStudent {
-  _id?: string;
-  fullname: string;
-  username: string;
-  password: string;
-  nis: number;
-  avatar?: string;
-  role: string;
-  yearEntry: number;
-  class: Types.ObjectId | string;
-  attendanceStatus?: AttendanceStatus;
-}
+import { Schema, model } from "mongoose";
 
 export enum AttendanceStatus {
   Present = "present",
   Absent = "absent",
   Excuse = "excuse",
+}
+
+export interface IStudent {
+  fullname: string;
+  username: string;
+  password: string;
+  nis: number; // Unique student identifier (NIS)
+  yearEntry: number;
+  avatar?: string; // Optional avatar URL
+  role: string;
+  class: Schema.Types.ObjectId; // Reference to the Class model
+  attendance: {
+    [date: string]: AttendanceStatus; // Attendance record for each day
+  };
 }
 
 const StudentSchema = new Schema<IStudent>({
@@ -28,14 +29,10 @@ const StudentSchema = new Schema<IStudent>({
   yearEntry: { type: Number, required: true },
   avatar: { type: String },
   role: { type: String, default: "student" },
-  class: {
-    type: Schema.Types.ObjectId,
-    ref: "Class",
-  },
-  attendanceStatus: {
-    type: String,
-    enum: ["present", "excuse", "absent"],
-    default: AttendanceStatus.Absent,
+  class: { type: Schema.Types.ObjectId, ref: "Class" },
+  attendance: {
+    type: Object,
+    default: {},
   },
 });
 
