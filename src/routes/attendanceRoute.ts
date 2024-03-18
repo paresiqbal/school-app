@@ -1,5 +1,7 @@
 import express, { Request, Response } from "express";
 import { Types } from "mongoose";
+
+// models
 import { AttendanceModel, IAttendance } from "../models/Attendance";
 import { StudentModel, IStudent } from "../models/Student";
 import { ClassModel } from "../models/Class";
