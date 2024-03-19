@@ -11,7 +11,7 @@ const router = express.Router();
 
 router.post("/mark", async (req: Request, res: Response) => {
   try {
-    const { date, teacherId, studentId, classId } = req.body;
+    const { date, teacherId, subject, studentId, classId } = req.body;
 
     // Check if an existing attendance record exists for the given classId, studentId, and date
     let existingAttendance = await AttendanceModel.findOne({
@@ -66,7 +66,8 @@ router.post("/mark", async (req: Request, res: Response) => {
       date,
       class: classId,
       teacher: teacherId,
-      timestamp: new Date(), // Use new Date() to get the current date and time
+      subject,
+      timestamp: new Date(),
       students: [],
     };
 
