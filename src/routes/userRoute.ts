@@ -98,6 +98,29 @@ router.post("/login", async (req: Request, res: Response) => {
   }
 });
 
+// Delete account
+router.delete("/delete/:id", async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const teacher = await TeacherModel.findByIdAndDelete(id);
+    if (teacher) {
+      return res.json(teacher);
+    }
+
+    const admin = await AdminModel.findByIdAndDelete(id);
+    if (admin) {
+      return res.json(admin);
+    }
+
+    res.status(404).json({ type: UserErrors.USER_NOT_FOUND });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ type: UserErrors.SERVER_ERROR, error: error.message });
+  }
+});
+
 // get all teacher
 router.get("/teachers", async (req: Request, res: Response) => {
   try {
