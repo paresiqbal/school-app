@@ -125,4 +125,42 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
   }
 });
 
+// edit attendance record
+router.patch("/edit-attendance-record", async (req: Request, res: Response) => {
+  try {
+    const { attendanceId, studentId, isPresent } = req.body;
+    if (!attendanceId || !studentId || !isPresent) {
+      return res.status(400).json({
+        message: "attendanceId, studentId and isPresent are required",
+      });
+    }
+
+    // find attendance record
+    const attendance = await AttendanceModel.findById(attendanceId);
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance not found" });
+    }
+
+    // find students inside record
+    const studentIndex = attendance.students.findIndex(
+      (student) => student.id.toString() === studentId
+    );
+    if (studentIndex === -1) {
+      return res
+        .status(404)
+        .json({ message: "Student not found in the attendance record" });
+    }
+
+    // change status
+    attendance.students[studentIndex].isPresent = isPresent;
+    await attendance.save();
+
+    res
+      .status(200)
+      .json({ message: "Attendance updated successfully", attendance });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update attendance", error });
+  }
+});
+
 export { router as AttendanceRouter };
