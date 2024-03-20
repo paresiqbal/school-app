@@ -102,4 +102,27 @@ router.post("/mark", async (req: Request, res: Response) => {
   }
 });
 
+// get attendance
+router.get("/attendance-record", async (req: Request, res: Response) => {
+  try {
+    const { date, classId } = req.query;
+    if (!date || !classId) {
+      return res.status(400).json({ message: "date and classId are required" });
+    }
+
+    const attendance = await AttendanceModel.findOne({
+      date,
+      class: classId,
+    });
+
+    if (!attendance) {
+      return res.status(404).json({ message: "Attendance not found" });
+    }
+
+    res.status(200).json({ attendance });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get attendance", error });
+  }
+});
+
 export { router as AttendanceRouter };
