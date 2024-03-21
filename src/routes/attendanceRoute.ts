@@ -19,13 +19,16 @@ router.post("/mark", async (req: Request, res: Response) => {
       class: classId,
     });
 
-    // If an existing record is found
     if (existingAttendance) {
-      // Check if the studentId is different
+      // Check if the studentId is the same and the teacherId is different
       const studentIndex = existingAttendance.students.findIndex(
         (s: any) => s.id.toString() === studentId
       );
-      if (studentIndex !== -1) {
+
+      // Check if the teacherId is the same as the one in the request
+      const isSameTeacher = existingAttendance.teacher.toString() === teacherId;
+
+      if (studentIndex !== -1 && isSameTeacher) {
         // If the student is already present, return with a message
         if (existingAttendance.students[studentIndex].isPresent === "present") {
           return res.status(400).json({
@@ -36,10 +39,14 @@ router.post("/mark", async (req: Request, res: Response) => {
         // Otherwise, update the existing record with the new student's presence
         existingAttendance.students[studentIndex].isPresent = "present";
         await existingAttendance.save();
+
         return res.status(200).json({
           message: "Attendance updated successfully",
           attendance: existingAttendance,
         });
+      } else if (!isSameTeacher) {
+        // If the teacherId is different, proceed to create a new attendance record as per below logic
+        // This means ignoring the `existingAttendance` and treating this as a case where no matching record was found
       }
     }
 
@@ -110,16 +117,16 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
       return res.status(400).json({ message: "date and classId are required" });
     }
 
-    const attendance = await AttendanceModel.findOne({
+    const attendanceRecords = await AttendanceModel.find({
       date,
       class: classId,
     });
 
-    if (!attendance) {
-      return res.status(404).json({ message: "Attendance not found" });
+    if (attendanceRecords.length === 0) {
+      return res.status(404).json({ message: "No attendance records found" });
     }
 
-    res.status(200).json({ attendance });
+    res.status(200).json({ attendanceRecords });
   } catch (error) {
     res.status(500).json({ message: "Failed to get attendance", error });
   }
