@@ -45,8 +45,9 @@ router.post("/mark", async (req: Request, res: Response) => {
           attendance: existingAttendance,
         });
       } else if (!isSameTeacher) {
-        // If the teacherId is different, proceed to create a new attendance record as per below logic
-        // This means ignoring the `existingAttendance` and treating this as a case where no matching record was found
+        return res.status(400).json({
+          message: "You are not authorized to mark attendance for this student",
+        });
       }
     }
 
