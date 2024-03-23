@@ -133,6 +133,63 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/attendance-record-by-teacher", async (req, res) => {
+  try {
+    const startDate = req.query.startDate as string;
+    const teacherName = req.query.teacherName as string;
+
+    if (!startDate || !teacherName) {
+      return res
+        .status(400)
+        .json({ message: "startDate and teacherName are required" });
+    }
+
+    // Convert startDate to a Date object and calculate endDate to be one week later
+    const start = new Date(startDate);
+    const end = new Date(start);
+    end.setDate(start.getDate() + 7);
+
+    // First, find the teacher's ID based on the provided name
+    // This step assumes teacher names are unique
+    const teacher = await TeacherModel.findOne({ name: teacherName });
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found" });
+    }
+
+    // Then, find attendance records within the date range for this teacher
+    const attendanceRecords = await AttendanceModel.find({
+      teacher: teacher._id,
+      date: {
+        $gte: start,
+        $lt: end,
+      },
+    }).populate({
+      path: "class",
+      select: "level majorName -_id", // Adjust according to your class schema to include only level and majorName
+    });
+
+    if (attendanceRecords.length === 0) {
+      return res.status(404).json({
+        message:
+          "No attendance records found for the given teacher and date range",
+      });
+    }
+
+    // Format the output
+    const records = attendanceRecords.map((record) => ({
+      teacherName: teacherName, // since we already have the teacher's name
+      class: record.class, // assuming the populate method worked as expected
+      date: record.date,
+    }));
+
+    res.status(200).json({ records });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Failed to get attendance records", error });
+  }
+});
+
 // edit attendance record
 router.patch("/edit-attendance-record", async (req: Request, res: Response) => {
   try {
