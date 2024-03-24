@@ -133,28 +133,35 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
   }
 });
 
-router.get("/attendance-record-by-teacher", async (req, res) => {
+router.get("/attendance-teacher", async (req, res) => {
   try {
-    // Assert the types of startDate and teacherId from query parameters
+    // Assert the types of startDate, endDate, and teacherId from query parameters
     const startDate = req.query.startDate as string;
+    const endDate = req.query.endDate as string; // Added endDate
     const teacherId = req.query.teacherId as string;
 
-    if (!startDate || !teacherId) {
+    if (!startDate || !endDate || !teacherId) {
       return res
         .status(400)
-        .json({ message: "startDate and teacherId are required" });
+        .json({ message: "startDate, endDate, and teacherId are required" });
     }
 
-    // Convert startDate to a Date object, ensuring it matches the expected type
+    // Convert startDate and endDate to Date objects, ensuring they match the expected type
     const start = new Date(startDate);
-    const end = new Date(start);
-    end.setDate(start.getDate() + 7);
+    const end = new Date(endDate);
+
+    // Ensure the end date is at least the start date or after
+    if (end < start) {
+      return res
+        .status(400)
+        .json({ message: "endDate must be after startDate" });
+    }
 
     const attendanceRecords = await AttendanceModel.find({
-      teacher: teacherId, // Assuming teacherId is a string that can be used directly
+      teacher: teacherId,
       date: {
         $gte: start,
-        $lt: end,
+        $lte: end, // Use $lte to include the end date in the search
       },
     }).populate({
       path: "class",
@@ -162,12 +169,10 @@ router.get("/attendance-record-by-teacher", async (req, res) => {
     });
 
     if (attendanceRecords.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "No attendance records found for the given teacher and date range",
-        });
+      return res.status(404).json({
+        message:
+          "No attendance records found for the given teacher and date range",
+      });
     }
 
     const records = attendanceRecords.map((record) => ({
