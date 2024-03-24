@@ -1,5 +1,7 @@
+// libarry
 import { Router, Request, Response } from "express";
 
+// model
 import { ClassModel, MajorModel } from "../models/Class";
 import { ClassErrors, MajorErrors } from "../enumError";
 import { StudentModel } from "../models/Student";
@@ -89,6 +91,40 @@ router.get("/specific-class/:classId", async (req: Request, res: Response) => {
     res.json(students);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+});
+
+// delete major by ID
+router.delete("/delete-major/:majorId", async (req: Request, res: Response) => {
+  try {
+    const { majorId } = req.params;
+
+    const existMajor = await MajorModel.findById(majorId);
+    if (!existMajor) {
+      return res.status(404).json({ type: MajorErrors.MAJOR_NOT_FOUND });
+    }
+    await MajorModel.findByIdAndDelete(majorId);
+
+    res.json({ message: "Major deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// delete class by ID
+router.delete("/delete-class/:classId", async (req: Request, res: Response) => {
+  try {
+    const { classId } = req.params;
+
+    const existClass = await ClassModel.findById(classId);
+    if (!existClass) {
+      return res.status(404).json({ type: ClassErrors.CLASS_NOT_FOUND });
+    }
+    await ClassModel.findByIdAndDelete(classId);
+
+    res.json({ message: "Class deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 });
 
