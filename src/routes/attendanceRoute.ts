@@ -135,50 +135,44 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
 
 router.get("/attendance-record-by-teacher", async (req, res) => {
   try {
+    // Assert the types of startDate and teacherId from query parameters
     const startDate = req.query.startDate as string;
-    const teacherName = req.query.teacherName as string;
+    const teacherId = req.query.teacherId as string;
 
-    if (!startDate || !teacherName) {
+    if (!startDate || !teacherId) {
       return res
         .status(400)
-        .json({ message: "startDate and teacherName are required" });
+        .json({ message: "startDate and teacherId are required" });
     }
 
-    // Convert startDate to a Date object and calculate endDate to be one week later
+    // Convert startDate to a Date object, ensuring it matches the expected type
     const start = new Date(startDate);
     const end = new Date(start);
     end.setDate(start.getDate() + 7);
 
-    // First, find the teacher's ID based on the provided name
-    // This step assumes teacher names are unique
-    const teacher = await TeacherModel.findOne({ name: teacherName });
-    if (!teacher) {
-      return res.status(404).json({ message: "Teacher not found" });
-    }
-
-    // Then, find attendance records within the date range for this teacher
     const attendanceRecords = await AttendanceModel.find({
-      teacher: teacher._id,
+      teacher: teacherId, // Assuming teacherId is a string that can be used directly
       date: {
         $gte: start,
         $lt: end,
       },
     }).populate({
       path: "class",
-      select: "level majorName -_id", // Adjust according to your class schema to include only level and majorName
+      select: "level majorName -_id",
     });
 
     if (attendanceRecords.length === 0) {
-      return res.status(404).json({
-        message:
-          "No attendance records found for the given teacher and date range",
-      });
+      return res
+        .status(404)
+        .json({
+          message:
+            "No attendance records found for the given teacher and date range",
+        });
     }
 
-    // Format the output
     const records = attendanceRecords.map((record) => ({
-      teacherName: teacherName, // since we already have the teacher's name
-      class: record.class, // assuming the populate method worked as expected
+      teacherId,
+      class: record.class,
       date: record.date,
     }));
 
