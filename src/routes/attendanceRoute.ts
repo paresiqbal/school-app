@@ -110,7 +110,7 @@ router.post("/mark", async (req: Request, res: Response) => {
   }
 });
 
-// get attendance
+// get attendance student
 router.get("/attendance-record", async (req: Request, res: Response) => {
   try {
     const { date, classId } = req.query;
@@ -130,62 +130,6 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
     res.status(200).json({ attendanceRecords });
   } catch (error) {
     res.status(500).json({ message: "Failed to get attendance", error });
-  }
-});
-
-router.get("/attendance-teacher", async (req, res) => {
-  try {
-    // Assert the types of startDate, endDate, and teacherId from query parameters
-    const startDate = req.query.startDate as string;
-    const endDate = req.query.endDate as string; // Added endDate
-    const teacherId = req.query.teacherId as string;
-
-    if (!startDate || !endDate || !teacherId) {
-      return res
-        .status(400)
-        .json({ message: "startDate, endDate, and teacherId are required" });
-    }
-
-    // Convert startDate and endDate to Date objects, ensuring they match the expected type
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    // Ensure the end date is at least the start date or after
-    if (end < start) {
-      return res
-        .status(400)
-        .json({ message: "endDate must be after startDate" });
-    }
-
-    const attendanceRecords = await AttendanceModel.find({
-      teacher: teacherId,
-      date: {
-        $gte: start,
-        $lte: end, // Use $lte to include the end date in the search
-      },
-    }).populate({
-      path: "class",
-      select: "level majorName -_id",
-    });
-
-    if (attendanceRecords.length === 0) {
-      return res.status(404).json({
-        message:
-          "No attendance records found for the given teacher and date range",
-      });
-    }
-
-    const records = attendanceRecords.map((record) => ({
-      teacherId,
-      class: record.class,
-      date: record.date,
-    }));
-
-    res.status(200).json({ records });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Failed to get attendance records", error });
   }
 });
 
@@ -224,6 +168,28 @@ router.patch("/edit-attendance-record", async (req: Request, res: Response) => {
       .json({ message: "Attendance updated successfully", attendance });
   } catch (error) {
     res.status(500).json({ message: "Failed to update attendance", error });
+  }
+});
+
+// get attendance teacher
+router.get("/attendance-teacher", async (req: Request, res: Response) => {
+  try {
+    const { teacherId } = req.query;
+    if (!teacherId) {
+      return res.status(400).json({ message: "teacher ID required" });
+    }
+
+    const attendanceRecords = await AttendanceModel.find({
+      teacher: teacherId,
+    });
+
+    if (attendanceRecords.length === 0) {
+      return res.status(404).json({ message: "No attendance records found" });
+    }
+
+    res.status(200).json({ attendanceRecords });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get attendance", error });
   }
 });
 
