@@ -172,7 +172,7 @@ router.patch("/edit-attendance-record", async (req: Request, res: Response) => {
 });
 
 // get attendance teacher
-router.get("/attendance-teacher", async (req: Request, res: Response) => {
+router.get("/attendance-teacher/", async (req: Request, res: Response) => {
   try {
     const { teacherId } = req.query;
     if (!teacherId) {
