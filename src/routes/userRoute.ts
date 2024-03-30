@@ -121,6 +121,22 @@ router.delete("/delete/:id", async (req: Request, res: Response) => {
   }
 });
 
+router.get("/all-users", async (req: Request, res: Response) => {
+  try {
+    // Fetch admins
+    const admins = await AdminModel.find().lean();
+    const teachers = await TeacherModel.find().lean();
+
+    // Combine admin & teacher
+    const users = admins.concat(teachers);
+
+    res.json(users);
+  } catch (error) {
+    console.error("Failed to fetch users:", error);
+    res.status(500).send("Error fetching users");
+  }
+});
+
 // get all teacher
 router.get("/teachers", async (req: Request, res: Response) => {
   try {
