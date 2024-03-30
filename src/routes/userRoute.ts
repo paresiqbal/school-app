@@ -163,7 +163,7 @@ router.get("/teacher/:id", async (req: Request, res: Response) => {
 });
 
 // update teacher data
-router.patch("/updateTeacher/:id", async (req: Request, res: Response) => {
+router.patch("/update-teacher/:id", async (req: Request, res: Response) => {
   const { id } = req.params;
   const { username, password, fullname, nip } = req.body;
 
