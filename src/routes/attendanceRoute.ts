@@ -32,8 +32,7 @@ router.post("/mark", async (req: Request, res: Response) => {
         // If the student is already present, return with a message
         if (existingAttendance.students[studentIndex].isPresent === "present") {
           return res.status(400).json({
-            message:
-              "Attendance record already exists for this student on the given date",
+            message: "Presensi sudah ada untuk siswa ini pada tanggal hari ini",
           });
         }
         // Otherwise, update the existing record with the new student's presence
