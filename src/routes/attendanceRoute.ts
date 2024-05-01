@@ -40,12 +40,12 @@ router.post("/mark", async (req: Request, res: Response) => {
         await existingAttendance.save();
 
         return res.status(200).json({
-          message: "Attendance updated successfully",
+          message: "Kehadiran berhasil diperbarui",
           attendance: existingAttendance,
         });
       } else if (!isSameTeacher) {
         return res.status(400).json({
-          message: "You are not authorized to mark attendance for this student",
+          message: "Anda tidak berwenang menandai kehadiran siswa ini",
         });
       }
     }
@@ -103,9 +103,9 @@ router.post("/mark", async (req: Request, res: Response) => {
 
     res
       .status(201)
-      .json({ message: "Attendance marked successfully", attendance });
+      .json({ message: "Kehadiran ditandai dengan sukses", attendance });
   } catch (error) {
-    res.status(500).json({ message: "Failed to mark attendance", error });
+    res.status(500).json({ message: "Gagal menandai kehadiran", error });
   }
 });
 
@@ -114,7 +114,7 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
   try {
     const { date, classId } = req.query;
     if (!date || !classId) {
-      return res.status(400).json({ message: "date and classId are required" });
+      return res.status(400).json({ message: "tanggal dan kelas diperlukan" });
     }
 
     const attendanceRecords = await AttendanceModel.find({
@@ -123,12 +123,14 @@ router.get("/attendance-record", async (req: Request, res: Response) => {
     });
 
     if (attendanceRecords.length === 0) {
-      return res.status(404).json({ message: "No attendance records found" });
+      return res
+        .status(404)
+        .json({ message: "Tidak ada catatan kehadiran yang ditemukan" });
     }
 
     res.status(200).json({ attendanceRecords });
   } catch (error) {
-    res.status(500).json({ message: "Failed to get attendance", error });
+    res.status(500).json({ message: "Gagal mendapatkan kehadiran", error });
   }
 });
 
