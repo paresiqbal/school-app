@@ -27,7 +27,9 @@ app.use("/class", ClassRouter);
 app.use("/attendance", AttendanceRouter);
 
 // connect to mongodb
-mongoose.connect(`${MONGO_URI}`);
+mongoose.connect(
+  `mongodb+srv://pares:pUWsz3hfUFwEUpGy@school-app.qc59lma.mongodb.net/school-app`
+);
 
 // run server
 app.listen(3001, () => {
