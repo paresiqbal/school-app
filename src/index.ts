@@ -19,6 +19,11 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// main page
+app.get("/", (req, res) => {
+  res.send("Welcome to the School App API!");
+});
+
 // routes
 app.use("/user", UserRouter);
 app.use("/student", StudentRouter);
