@@ -14,7 +14,6 @@ import { AttendanceRouter } from "./routes/attendanceRoute";
 dotenv.config();
 
 const app = express();
-const MONGO_URI = process.env.MONGO_KEY;
 
 // middleware
 app.use(express.json());
@@ -28,7 +27,7 @@ app.use("/attendance", AttendanceRouter);
 
 // connect to mongodb
 mongoose.connect(
-  `mongodb+srv://pares:${MONGO_URI}}@school-app.qc59lma.mongodb.net/school-app`
+  `mongodb+srv://pares:${process.env.MONGO_KEY}@school-app.qc59lma.mongodb.net/?retryWrites=true&w=majority&appName=school-app`
 );
 
 // run server
