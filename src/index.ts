@@ -32,7 +32,7 @@ app.use("/attendance", AttendanceRouter);
 
 // connect to mongodb
 mongoose.connect(
-  `mongodb+srv://pares:${process.env.MONGO_KEY}@school-app.qc59lma.mongodb.net/?retryWrites=true&w=majority&appName=school-app`
+  `mongodb+srv://pares:${process.env.MONGO_KEY}@school-app.qc59lma.mongodb.net/school-app?retryWrites=true&w=majority&appName=school-app`
 );
 
 // run server
