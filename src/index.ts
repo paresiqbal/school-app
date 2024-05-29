@@ -12,7 +12,6 @@ import { AttendanceRouter } from "./routes/attendanceRoute";
 
 // config
 dotenv.config();
-
 const app = express();
 
 // middleware
@@ -25,10 +24,10 @@ app.get("/", (req, res) => {
 });
 
 // routes
-app.use("/user", UserRouter);
-app.use("/student", StudentRouter);
-app.use("/class", ClassRouter);
-app.use("/attendance", AttendanceRouter);
+app.use("/api/user", UserRouter);
+app.use("/api/student", StudentRouter);
+app.use("/api/class", ClassRouter);
+app.use("/api/attendance", AttendanceRouter);
 
 // connect to mongodb
 mongoose.connect(
@@ -37,5 +36,5 @@ mongoose.connect(
 
 // run server
 app.listen(3001, () => {
-  console.log("Server has started on port 3001 🚀");
+  console.log("Server has started on port 3001 ⚡");
 });
