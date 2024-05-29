@@ -31,7 +31,7 @@ app.use("/api/attendance", AttendanceRouter);
 
 // connect to mongodb
 mongoose.connect(
-  `mongodb+srv://pares:${process.env.MONGO_KEY}@school-app.hxivwoe.mongodb.net/?retryWrites=true&w=majority&appName=school-app`
+  `mongodb+srv://pares:${process.env.MONGO_KEY}@school-app.hxivwoe.mongodb.net/schoolDB?retryWrites=true&w=majority&appName=school-app`
 );
 
 // run server

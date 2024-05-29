@@ -14,7 +14,7 @@ const router = Router();
 dotenv.config();
 
 // Register account
-router.post("/register", async (req: Request, res: Response) => {
+router.post("/create-user", async (req: Request, res: Response) => {
   const { username, password, role, fullname, nip } = req.body;
 
   try {
