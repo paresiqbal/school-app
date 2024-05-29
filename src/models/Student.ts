@@ -8,7 +8,6 @@ export interface IStudent {
   password: string;
   nis: number;
   yearEntry: number;
-  avatar?: string;
   role: string;
   class: Schema.Types.ObjectId;
 }
@@ -19,7 +18,6 @@ const StudentSchema = new Schema<IStudent>({
   password: { type: String, required: true },
   nis: { type: Number, required: true, unique: true },
   yearEntry: { type: Number, required: true },
-  avatar: { type: String },
   role: { type: String, default: "student" },
   class: { type: Schema.Types.ObjectId, ref: "Class" },
 });
