@@ -80,7 +80,7 @@ router.post("/login", async (req: Request, res: Response) => {
 // update student
 router.patch("/update/:id", async (req, res) => {
   const { id } = req.params;
-  const { username, password, fullname, nis, yearEntry, avatar } = req.body;
+  const { username, password, fullname, nis, yearEntry } = req.body;
 
   try {
     const student = await StudentModel.findById(id);
@@ -108,11 +108,9 @@ router.patch("/update/:id", async (req, res) => {
       student.password = hashedPassword;
     }
 
-    // Update the student document with provided values or leave them as they are
     student.fullname = fullname || student.fullname;
     student.nis = nis || student.nis;
     student.yearEntry = yearEntry || student.yearEntry;
-    student.avatar = avatar || student.avatar; // Update avatar if provided
 
     await student.save();
     res.json(student);
