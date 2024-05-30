@@ -12,6 +12,7 @@ import { AttendanceRouter } from "./routes/attendanceRoute";
 // config
 dotenv.config();
 const app = express();
+const PORT = process.env.PORT || 3001;
 
 // middleware
 app.use(express.json());
@@ -40,7 +41,7 @@ mongoose
   });
 
 // run server
-const PORT = process.env.PORT || 3001;
+
 app.listen(PORT, () => {
   console.log(`Server has started on port ${PORT} ⚡`);
 });
