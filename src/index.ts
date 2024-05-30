@@ -1,4 +1,3 @@
-// libarry
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -30,11 +29,18 @@ app.use("/api/class", ClassRouter);
 app.use("/api/attendance", AttendanceRouter);
 
 // connect to mongodb
-mongoose.connect(
-  `mongodb+srv://pares:${process.env.MONGO_KEY}@school-app.hxivwoe.mongodb.net/schoolDB?retryWrites=true&w=majority&appName=school-app`
-);
+mongoose
+  .connect(
+    `mongodb+srv://pares:${process.env.MONGO_KEY}@school-app.hxivwoe.mongodb.net/schoolDB?retryWrites=true&w=majority&appName=school-app`
+  )
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1);
+  });
 
 // run server
-app.listen(3001, () => {
-  console.log("Server has started on port 3001 ⚡");
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`Server has started on port ${PORT} ⚡`);
 });
