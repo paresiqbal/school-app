@@ -20,7 +20,7 @@ app.use(cors());
 
 // main page
 app.get("/", (req, res) => {
-  res.send("Welcome to the School App API!");
+  res.send("Welcome to the School App API ⚡");
 });
 
 // routes
